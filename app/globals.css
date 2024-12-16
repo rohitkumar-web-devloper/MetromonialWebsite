@@ -68,7 +68,31 @@ body {
 body {
   background: #000000f3;
 }
-
+.line {
+  background: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    from(rgba(245, 237, 253, 0.08)),
+    color-stop(50%, #f5edfd),
+    to(rgba(245, 237, 253, 0.08))
+  );
+  background: -o-linear-gradient(
+    left,
+    rgba(245, 237, 253, 0.08) 0%,
+    #f5edfd 50%,
+    rgba(245, 237, 253, 0.08) 100%
+  );
+  background: linear-gradient(
+    90deg,
+    rgba(245, 237, 253, 0.08) 0%,
+    #f5edfd 50%,
+    rgba(245, 237, 253, 0.08) 100%
+  );
+  height: 0.1em;
+  width: 100%;
+  /* margin: 2rem 0; */
+}
 .nav-bg {
   border-bottom: 2px solid #d4d4d41a;
   background: rgba(255, 255, 255, 0.1);

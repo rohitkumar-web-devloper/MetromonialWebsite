@@ -11,7 +11,7 @@ const MainComp = ({
 }>) => {
     const pathname = usePathname()
 
-    const shouldHideNavbar = ['/sign-in'].some((route) => {
+    const shouldHideNavbar = ['/sign-in','/sign-up'].some((route) => {
         return typeof route === "string"
             ? pathname === route
             : route.test(pathname);

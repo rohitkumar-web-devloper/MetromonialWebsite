@@ -11,11 +11,17 @@ import profileLogo from '../../assets/profile.svg'
 import { useFormik } from 'formik'
 import * as Yup from 'yup' // Import Yup for validation
 import { toast } from 'sonner'
+import { useMutation } from '@apollo/client'
+import { REGISTER_CUSTOMER_POST } from '@/GraphQl'
+import { Loader2 } from 'lucide-react'
+import { userInfoStore } from '@/stores'
 const SignUpPage = () => {
+    const router = useRouter()
+    const [registerCustomer, { loading }] = useMutation(REGISTER_CUSTOMER_POST)
+    const { addUserInfo } = userInfoStore()
     const [profile, setProfile] = useState()
     const [profilePrev, setProfilePrev] = useState('')
-    const router = useRouter()
-    const handleImageUpload = (event,) => {
+    const handleImageUpload = (event) => {
         const files = event.target.files;
         if (files && files.length > 0) {
             Array.from(files).forEach((file: File) => {
@@ -51,11 +57,41 @@ const SignUpPage = () => {
                 .oneOf([Yup.ref('password'), null], 'Passwords must match')
                 .required('Confirm Password is required'),
         }),
-        onSubmit: (values) => {
+        onSubmit: async (value) => {
             if (!profile) {
-                return toast('Profile Image is required.')
+                return toast.error('Profile Image is required.', {
+                    action: {
+                        label: "Undo",
+                    }
+                })
             }
-            console.log(values);
+            let newValue = {
+                ...value
+            }
+            delete newValue.confirmPassword
+
+            const { data, errors } = await registerCustomer({
+                variables: {
+                    ...newValue,
+                    profile: profile,
+                    status: true
+                }
+            });
+            if (errors) {
+                return toast.error(errors.at(-1)?.message, {
+                    action: {
+                        label: "Undo",
+                    }
+                })
+            }
+            toast.success("Register Successfully.", {
+                action: {
+                    label: "Undo",
+                }
+            })
+            addUserInfo(data?.registerCustomer)
+            localStorage.setItem('accessToken', data?.registerCustomer?.token)
+            router.push('/')
         },
     })
 
@@ -72,7 +108,7 @@ const SignUpPage = () => {
                                     type="text"
                                     id="firstName"
                                     name="firstName"
-                                    value={values.firstName}
+                                    value={values.firstName || ""}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     placeholder="Enter First Name"
@@ -86,7 +122,7 @@ const SignUpPage = () => {
                                     type="text"
                                     id="lastName"
                                     name="lastName"
-                                    value={values.lastName}
+                                    value={values.lastName || ''}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     placeholder="Enter Last Name"
@@ -100,7 +136,7 @@ const SignUpPage = () => {
                                     type="email"
                                     id="email"
                                     name="email"
-                                    value={values.email}
+                                    value={values.email || ''}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     placeholder="Enter Email"
@@ -114,7 +150,7 @@ const SignUpPage = () => {
                                     type="text"
                                     id="mobile"
                                     name="mobile"
-                                    value={values.mobile}
+                                    value={values.mobile || ''}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     placeholder="Enter Mobile No."
@@ -128,7 +164,7 @@ const SignUpPage = () => {
                                     type="password"
                                     id="password"
                                     name="password"
-                                    value={values.password}
+                                    value={values.password || ''}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     placeholder="Enter Password"
@@ -142,7 +178,7 @@ const SignUpPage = () => {
                                     type="password"
                                     id="confirmPassword"
                                     name="confirmPassword"
-                                    value={values.confirmPassword}
+                                    value={values.confirmPassword || ''}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     placeholder="Enter Confirm Password"
@@ -166,7 +202,6 @@ const SignUpPage = () => {
                                     <input
                                         id="front-upload"
                                         type="file"
-                                        // accept="image/*"
                                         accept="image/png, image/jpeg, image/jpg"
                                         onChange={(e) => handleImageUpload(e)}
                                         className="absolute opacity-0 h-[200px] w-[200px]"
@@ -180,7 +215,12 @@ const SignUpPage = () => {
 
                         </div>
                         <div className='flex justify-center items-center flex-col gap-4 mt-6'>
-                            <Button className='text-lg rounded-full mb-2 mt-3 max-w-[80%] w-full '>Submit</Button>
+                            <Button disabled={loading} className='text-lg rounded-full mb-2 mt-3 max-w-[80%] w-full '>
+                                {
+                                    loading && <Loader2 className="animate-spin" />
+                                }
+                                Submit
+                            </Button>
 
                             <div className="line mt-4"></div>
                             <div className='flex justify-center'>

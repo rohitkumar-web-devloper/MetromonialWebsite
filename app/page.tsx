@@ -1,8 +1,9 @@
+import { MainPage } from "@/views";
 
 export default function page() {
   return (
     <div >
-      sdasds
+      <MainPage />
     </div>
   );
 }

@@ -19,9 +19,9 @@ const NavBarComp = () => {
                 <div className='flex justify-between items-center'>
                     <h1>Logo</h1>
                     <div className='flex gap-3'>
-                        <Button className='rounded-full' variant="outline" size="icon" >
+                        {/* <Button className='rounded-full' variant="outline" size="icon" >
                             <Search />
-                        </Button>
+                        </Button> */}
                         {!user && <Button className='rounded-full' variant="secondary" size="icon" onClick={() => router.push('sign-in')} >
                             <User />
                         </Button>}
@@ -32,7 +32,16 @@ const NavBarComp = () => {
                             </Avatar>
                             <h1 className='text-white text-md'>Hi, {user?.firstName}</h1>
                         </div>}
-                        <Button className='rounded-full text-black font-medium' >
+                        <Button className='rounded-full text-black font-medium'
+                            onClick={() => {
+                                if (user) {
+                                    router.push('post-ads')
+                                } else {
+                                    router.push('sign-in')
+
+                                }
+                            }}
+                        >
                             <Plus />
                             Add Post
                         </Button>

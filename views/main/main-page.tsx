@@ -1,3 +1,4 @@
+'use client'
 import { Container } from '@/layouts'
 import React from 'react'
 import BannerImage from '../../assets/banner.jpg'
@@ -5,12 +6,12 @@ import { Input } from '@/components/ui/input'
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
     CardHeader,
-    CardTitle,
 } from "@/components/ui/card"
+import { useQuery } from '@apollo/client'
+import { homeCategory } from '@/GraphQl'
 const MainPage = () => {
+    const { data } = useQuery(homeCategory)
     return (
         <div>
             <div>
@@ -44,7 +45,7 @@ const MainPage = () => {
                 </div>
             </div>
             <Container className='my-10'>
-                <div>
+                <div className=''>
                     <h1 className='text-primary text-3xl text-center'>Post Your Adult Advertisement or Search Hot Advertisers</h1>
                     <p className='text-white text-lg text-center mt-2'>Locate the Best Escorts in Your City</p>
 
@@ -54,18 +55,19 @@ const MainPage = () => {
                 </div>
                 <div className='my-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
                     {
-                        [...Array(3)].map((_, index) => {
+                        data && data?.homeCategory?.map((item: { image: string, name: string, description: string }, index: number) => {
                             return (
-                                <Card className=" bg-[#d4d4d41a] border-white border-opacity-15 h-full" key={index}>
+                                <Card className=" bg-[#d4d4d41a] border-white border-opacity-15 h-full cursor-pointer rounded-xl" key={index}>
                                     <CardHeader className='p-0 overflow-hidden'>
                                         <div style={{
                                             width: "100%",
                                             paddingBottom: "auto",
                                             position: "relative",
-                                            overflow: "hidden"
+                                            overflow: "hidden",
+                                            height: "300px"
                                         }}>
                                             <img
-                                                src={BannerImage.src}
+                                                src={item?.image}
                                                 alt="Event"
                                                 style={{
                                                     width: "100%",
@@ -74,8 +76,7 @@ const MainPage = () => {
                                                 }}
                                             />
                                             <div className='flex bg-primary py-2  justify-center absolute bottom-0 w-full '>
-                                                <h1 className='text-black text-center'>sHSAJhsa</h1>
-
+                                                <h1 className='text-black text-center font-bold ' style={{letterSpacing:".5px"}}>{item?.name}</h1>
                                             </div>
                                         </div>
                                         {/* <CardTitle>Create project</CardTitle>
@@ -84,7 +85,8 @@ const MainPage = () => {
                                     <CardContent className='p-4'>
                                         <div>
                                             <p className='text-white text-sm'>
-                                                Hot and independent escorts ads. Sexy girls ready with their escort services to make you feel satisfied sexually.Women seeking men for a great session with their erotic services.
+                                                {/* Hot and independent escorts ads. Sexy girls ready with their escort services to make you feel satisfied sexually.Women seeking men for a great session with their erotic services. */}
+                                                {item?.description}
                                             </p>
                                         </div>
                                     </CardContent>

@@ -53,7 +53,7 @@ const MainPage = () => {
                         Lust Lounge is home to the top-rated female escorts in India. You come to a number of fresh classified ads for the sexy babes who are also eager to engage with you sexually. Get ready to bang up hot escorts, transsexual, swinger meeting, gay escorts, and adult meeting in your city.This is an open platform where pleasure seekers and escorts come to find their interests. If you are not able to find your dream girls, create your profile and ask for the services you are looking for. This is a highly visited adult classified ad portal that helps you find out the babes you dream of. Post your classified ads for FREE if you don’t find a perfect profile.
                     </p>
                 </div>
-                <div className='my-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
+                <div className='my-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8'>
                     {
                         data && data?.homeCategory?.map((item: { image: string, name: string, description: string }, index: number) => {
                             return (

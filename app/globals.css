@@ -6,7 +6,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -64,7 +63,6 @@ body {
   }
 }
 
-
 body {
   background: #000000f3;
 }
@@ -106,6 +104,17 @@ body {
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  div,
+  span {
+    @apply tracking-wider;
   }
 }

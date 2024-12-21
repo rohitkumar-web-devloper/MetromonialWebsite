@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { Footer } from './footer';
 const MainComp = ({
     children,
 }: Readonly<{
@@ -48,6 +49,9 @@ const MainComp = ({
             <ApolloProvider client={client}>
                 {children}
             </ApolloProvider>
+            <When isHide={shouldHideNavbar}>
+                <Footer />
+            </When>
         </>
     )
 }

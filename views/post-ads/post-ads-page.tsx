@@ -12,13 +12,13 @@ import {
 } from '@/components/ui/select'
 import { Container } from '@/layouts'
 import Image from 'next/image'
-import React, { useReducer } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import profile from '../../assets/profile.svg'
 import { useQuery } from '@apollo/client'
-import { getPlans, homeCategory } from '@/GraphQl'
+import { CITIES_GET, getPlans, homeCategory, STATES_GET } from '@/GraphQl'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Check } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 const reducer = (state, action) => {
   switch (action.type) {
@@ -92,6 +92,16 @@ const reducer = (state, action) => {
         ...state,
         hair: action?.payload
       }
+    case 'state_code':
+      return {
+        ...state,
+        state_code: action?.payload
+      }
+    case 'state_name':
+      return {
+        ...state,
+        state_name: action?.payload
+      }
     case 'whatsAppNumber':
       return {
         ...state,
@@ -102,33 +112,44 @@ const reducer = (state, action) => {
         ...state,
         mobileNumber: action?.payload
       }
+    case 'city':
+      return {
+        ...state,
+        city: action?.payload
+      }
     case 'services':
-      const check = state.services.some(it => it == action?.payload)
-        ? state.services.filter(it => it != action?.payload)
+      const check = state.services.some((it: string) => it == action?.payload)
+        ? state.services.filter((it: string) => it != action?.payload)
         : [...state.services, action?.payload]
       return {
         ...state,
         services: check
       }
     case 'attentionTo':
-      const checkdata = state.attentionTo.some(it => it == action?.payload)
-        ? state.attentionTo.filter(it => it != action?.payload)
+      const checkdata = state.attentionTo.some(
+        (it: string) => it == action?.payload
+      )
+        ? state.attentionTo.filter((it: string) => it != action?.payload)
         : [...state.attentionTo, action?.payload]
       return {
         ...state,
         attentionTo: checkdata
       }
     case 'placeOfService':
-      const checkdata1 = state.placeOfService.some(it => it == action?.payload)
-        ? state.placeOfService.filter(it => it != action?.payload)
+      const checkdata1 = state.placeOfService.some(
+        (it: string) => it == action?.payload
+      )
+        ? state.placeOfService.filter((it: string) => it != action?.payload)
         : [...state.placeOfService, action?.payload]
       return {
         ...state,
         placeOfService: checkdata1
       }
     case 'paymentMethod':
-      const checkdata2 = state.paymentMethod.some(it => it == action?.payload)
-        ? state.paymentMethod.filter(it => it != action?.payload)
+      const checkdata2 = state.paymentMethod.some(
+        (it: string) => it == action?.payload
+      )
+        ? state.paymentMethod.filter((it: string) => it != action?.payload)
         : [...state.paymentMethod, action?.payload]
       return {
         ...state,
@@ -147,13 +168,15 @@ const reducer = (state, action) => {
     case 'GALLERY_FILTER_INDEX':
       return {
         ...state,
-        profile: state?.profile.filter((_, index) => index != action?.payload)
+        profile: state?.profile.filter(
+          (_: any, index: number) => index != action?.payload
+        )
       }
     case 'GALLERY_PREV_FILTER_INDEX':
       return {
         ...state,
         profile_prev: state?.profile_prev.filter(
-          (_, index) => index != action?.payload
+          (_: any, index: number) => index != action?.payload
         )
       }
     default:
@@ -184,18 +207,29 @@ const PostAdsPage = () => {
     profile_prev: [],
     profile: [],
     mobileNumber: '',
-    whatsAppNumber: ''
+    whatsAppNumber: '',
+    state_name: '',
+    state_code: '',
+    city: ''
+  })
+  const { data: stateData } = useQuery(STATES_GET)
+  const { data: plansData } = useQuery(getPlans)
+  console.log(plansData, 'plansData')
+
+  const { data: cityData } = useQuery(CITIES_GET, {
+    variables: { stateId: +state?.state_code },
+    skip: state?.state_code ? false : true
   })
   const handleChangeValue = (type: string, payload: string) => {
     dispatch({ type, payload })
   }
   const { data } = useQuery(homeCategory)
-  const { data: plans } = useQuery(getPlans)
-  console.log(plans, 'plans')
-
-  console.log(state, '====>>>>state')
-  const handleImageUpload = (event, type, type_prev) => {
-    if (state.profile.length > 15) {
+  const handleImageUpload = (
+    event: EventListener,
+    type: string,
+    type_prev: string
+  ) => {
+    if (state.profile.length > 5) {
       return toast.error(`Max 15 images is required.`)
     }
     const files = event.target.files
@@ -204,7 +238,7 @@ const PostAdsPage = () => {
         return toast.error(`Select Max 15 images.`)
       }
     }
-    if (files.length > 15) {
+    if (files.length > 5) {
       return toast.error(`Select Max 15 images.`)
     }
 
@@ -226,9 +260,21 @@ const PostAdsPage = () => {
       })
     }
   }
+  const [states, setStates] = useState([])
+  const [cities, setCities] = useState([])
+  useEffect(() => {
+    if (stateData) {
+      setStates(stateData?.states?.states)
+    }
+  }, [stateData])
+  useEffect(() => {
+    if (cityData) {
+      setCities(cityData?.modalCities)
+    }
+  }, [cityData])
   return (
     <div>
-      <Container>
+      <Container className='lg:w-[80%]'>
         <div className='my-10'>
           <div className='flex items-center gap-2'>
             <ArrowLeft
@@ -275,32 +321,55 @@ const PostAdsPage = () => {
             </div>
             <div className='items-center gap-2 grid col-span-4 md:col-span-2 w-full'>
               <Label htmlFor='email' className='text-white'>
-                Select City<span className='text-red-500'>*</span>{' '}
+                Select State<span className='text-red-500'>*</span>{' '}
               </Label>
-              <Select>
+              <Select
+                value={state?.state_name}
+                onValueChange={(value: string) => {
+                  const items = states.find(
+                    (it: { name: string; id: string }) => it?.name == value
+                  ) as unknown as { id: string }
+                  handleChangeValue('state_name', value)
+                  handleChangeValue('state_code', items?.id)
+                }}
+              >
                 <SelectTrigger className='bg-[#d4d4d41a] w-full text-white'>
-                  <SelectValue placeholder='Select City' />
+                  <SelectValue placeholder='Select State' />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='driving'>Driving License</SelectItem>
-                  <SelectItem value='passport'>Passport</SelectItem>
-                  <SelectItem value='aadhar'>Aadhar Card</SelectItem>
+                  {states?.map((it: { name: string; id: string }) => {
+                    return (
+                      <SelectItem value={it?.name} key={it?.id}>
+                        {it?.name}
+                      </SelectItem>
+                    )
+                  })}
                 </SelectContent>
               </Select>
             </div>
             <div className='items-center gap-2 grid col-span-4 md:col-span-2 w-full'>
               <Label htmlFor='email' className='text-white'>
-                District
+                Select City<span className='text-red-500'>*</span>{' '}
               </Label>
-              <Input
-                type='text'
-                placeholder='Enter District'
-                onChange={e => {
-                  handleChangeValue('district', e.target.value)
+              <Select
+                value={state?.city}
+                onValueChange={(value: string) => {
+                  handleChangeValue('city', value)
                 }}
-                value={state?.district}
-                className='w-full'
-              />
+              >
+                <SelectTrigger className='bg-[#d4d4d41a] w-full text-white'>
+                  <SelectValue placeholder='Select City' />
+                </SelectTrigger>
+                <SelectContent>
+                  {cities?.map((it: { name: string; id: string }) => {
+                    return (
+                      <SelectItem value={it?.name} key={it?.id}>
+                        {it?.name}
+                      </SelectItem>
+                    )
+                  })}
+                </SelectContent>
+              </Select>
             </div>
             <div className='items-center gap-2 grid col-span-4 md:col-span-2 w-full'>
               <Label htmlFor='email' className='text-white'>
@@ -387,7 +456,7 @@ const PostAdsPage = () => {
               <Label htmlFor='email' className='text-white'>
                 Ethnicity<span className='text-red-500'>*</span>{' '}
               </Label>
-              <div className='flex gap-2'>
+              <div className='flex flex-wrap gap-2'>
                 {[
                   'African',
                   'Indian',
@@ -427,9 +496,12 @@ const PostAdsPage = () => {
                   <SelectValue placeholder='Select Nationality' />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='driving'>Driving License</SelectItem>
-                  <SelectItem value='passport'>Passport</SelectItem>
-                  <SelectItem value='aadhar'>Aadhar Card</SelectItem>
+                  <SelectItem value='indin'>Indian</SelectItem>
+                  <SelectItem value='russian'>Russian</SelectItem>
+                  <SelectItem value='affrican'>Affrican</SelectItem>
+                  <SelectItem value='american'>American</SelectItem>
+                  <SelectItem value='japanese'>Japanese</SelectItem>
+                  <SelectItem value='chinees'>Chinees</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -437,7 +509,7 @@ const PostAdsPage = () => {
               <Label htmlFor='email' className='text-white'>
                 Breast<span className='text-red-500'>*</span>{' '}
               </Label>
-              <div className='flex gap-2'>
+              <div className='flex flex-wrap gap-2'>
                 {['Natural Boobs', 'Busty'].map(item => {
                   return (
                     <div
@@ -461,7 +533,7 @@ const PostAdsPage = () => {
                 Hair<span className='text-red-500'>*</span>{' '}
               </Label>
 
-              <div className='flex gap-2'>
+              <div className='flex flex-wrap gap-2'>
                 {['Blond Hair', 'Brown Hair', 'Black Hair', 'Red Hair'].map(
                   item => {
                     return (
@@ -487,7 +559,7 @@ const PostAdsPage = () => {
                 Body Type<span className='text-red-500'>*</span>{' '}
               </Label>
 
-              <div className='flex gap-2'>
+              <div className='flex flex-wrap gap-2'>
                 {['Slim', 'Curvy'].map(item => {
                   return (
                     <div
@@ -651,7 +723,7 @@ const PostAdsPage = () => {
               Favourite images from your previous events
             </p>
             <div className='flex flex-wrap gap-4 p-10 w-full'>
-              {state?.profile_prev?.map((it, index) => {
+              {state?.profile_prev?.map((it: string, index: string) => {
                 return (
                   <div className='flex flex-col gap-10' key={index}>
                     <div className='flex flex-col justify-center items-center border-2 border-white bg-[#d4d4d41a] p-4 border-opacity-10 rounded-3xl w-[200px] h-[200px] text-white'>
@@ -755,7 +827,64 @@ const PostAdsPage = () => {
               />
             </div>
           </div>
-          <Button className='mt-4 w-full text-lg'>Confirm</Button>
+          <div className='bg-[#d4d4d41a] mt-4 p-4 rounded-lg'>
+            <div className='flex flex-col gap-4 w-full text-center'>
+              <h1 className='text-3xl text-primary'>
+                Publish for free in just a few steps.
+              </h1>
+              <p className='text-sm text-white'>
+                Please select the offer type and time slot to promote your ad.{' '}
+              </p>
+            </div>
+            <div className='gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-10'>
+              {plansData &&
+                plansData?.modalPlans.map(item => {
+                  return (
+                    <GradientColor className='p-[1px] rounded-lg'      key={item?.id}>
+                      <div
+                        className='bg-[#2f2f2f] py-6 p-3 rounded-lg'
+                  
+                      >
+                        <div
+                          style={{
+                            width: '100%',
+                            paddingBottom: 'auto',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            height: '150px'
+                          }}
+                          className='sm:px-6'
+                        >
+                          <img
+                            src={item?.image}
+                            alt='Event'
+                            style={{
+                              width: '100%',
+                              objectFit: 'cover',
+                              position: 'static'
+                            }}
+                          />
+                        </div>
+                        <div className='flex flex-col justify-center items-center gap-3 mt-6'>
+                          <h2 className='text-white'>{item?.name}</h2>
+                          <h1 className='text-2xl text-primary'>
+                            Rs.{item?.price}
+                          </h1>
+                          <GradientColor className='p-[1px] rounded-full w-full'>
+                            <Button className='bg-[#2f2f2f] rounded-full w-full font-semibold text-white hover:text-black'>
+                              <span>{item?.credits} Credits</span>
+                              <Check />
+                            </Button>
+                          </GradientColor>
+                          <p className='text-center text-sm text-white'>{item?.description}</p>
+                        </div>
+                      </div>
+                    </GradientColor>
+                  )
+                })}
+            </div>
+          </div>
+          <Button className='mt-8 rounded-full w-full font-semibold text-lg'>Confirm</Button>
         </div>
       </Container>
     </div>

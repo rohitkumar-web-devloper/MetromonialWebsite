@@ -15,25 +15,23 @@ export const homeCategory = gql`
   }
 `
 export const getPlans = gql`
-  query homeCategory {
+  query modalPlans {
     modalPlans {
       credits
-      description
-      id
-      image
-      name
-      price
-      timeSlots {
-        planId
-        slots {
-          endTime
-          planId
-          startTime
-          timeSlotId
-        }
-        timeSlotId
+    description
+    id
+    image
+    name
+    price
+    timeSlots {
+      planId
+      slots {
+        endTime
+        startTime
       }
-      type
+      timeSlotId
+    }
+    type
     }
   }
 `

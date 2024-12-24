@@ -14,12 +14,19 @@ import { Container } from '@/layouts'
 import Image from 'next/image'
 import React, { useEffect, useReducer, useState } from 'react'
 import profile from '../../assets/profile.svg'
-import { useQuery } from '@apollo/client'
-import { CITIES_GET, getPlans, homeCategory, STATES_GET } from '@/GraphQl'
+import { useMutation, useQuery } from '@apollo/client'
+import {
+  ADD_POST,
+  CITIES_GET,
+  getPlans,
+  homeCategory,
+  STATES_GET
+} from '@/GraphQl'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { ArrowLeft, Check } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import dayjs from 'dayjs'
 const reducer = (state, action) => {
   switch (action.type) {
     case 'category':
@@ -91,6 +98,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         hair: action?.payload
+      }
+    case 'email':
+      return {
+        ...state,
+        email: action?.payload
       }
     case 'state_code':
       return {
@@ -185,6 +197,7 @@ const reducer = (state, action) => {
 }
 const PostAdsPage = () => {
   const router = useRouter()
+  const [createAd, { loading }] = useMutation(ADD_POST)
   const [state, dispatch] = useReducer(reducer, {
     category: '',
     categoryId: '',
@@ -210,12 +223,11 @@ const PostAdsPage = () => {
     whatsAppNumber: '',
     state_name: '',
     state_code: '',
-    city: ''
+    city: '',
+    email: ''
   })
   const { data: stateData } = useQuery(STATES_GET)
   const { data: plansData } = useQuery(getPlans)
-  console.log(plansData, 'plansData')
-
   const { data: cityData } = useQuery(CITIES_GET, {
     variables: { stateId: +state?.state_code },
     skip: state?.state_code ? false : true
@@ -264,7 +276,7 @@ const PostAdsPage = () => {
   const [cities, setCities] = useState([])
   useEffect(() => {
     if (stateData) {
-      setStates(stateData?.states?.states)
+      setStates(stateData?.modalStates)
     }
   }, [stateData])
   useEffect(() => {
@@ -272,6 +284,156 @@ const PostAdsPage = () => {
       setCities(cityData?.modalCities)
     }
   }, [cityData])
+  const [planSelect, setPlanSelect] = useState({})
+  const [selectSlot, setSelectSlot] = useState({})
+  const handleSubmit = async () => {
+    const {
+      address,
+      age,
+      attentionTo,
+      bodyType,
+      breast,
+      category,
+      categoryId,
+      city,
+      description,
+      email,
+      ethnicity,
+      hair,
+      mobileNumber,
+      nationality,
+      paymentMethod,
+      placeOfService,
+      pricePerHour,
+      services,
+      state_name,
+      title,
+      whatsAppNumber,
+      zip,
+      profile
+    } = state
+    if (!category) {
+      return toast.error('Category is required.')
+    }
+    if (!state_name.length) {
+      return toast.error('State is required.')
+    }
+    if (!city) {
+      return toast.error('City is required.')
+    }
+    if (!age.trim()) {
+      return toast.error('Age is required.')
+    }
+    if (!attentionTo.length) {
+      return toast.error('Attention to is required.')
+    }
+    if (!bodyType) {
+      return toast.error('Body type is required.')
+    }
+    if (!breast) {
+      return toast.error('Breast is required.')
+    }
+
+    if (!description.trim()) {
+      return toast.error('Description is required.')
+    }
+    if (!email.trim()) {
+      return toast.error('Email is required.')
+    }
+    if (!ethnicity) {
+      return toast.error('Ethnicity is required.')
+    }
+    if (!hair) {
+      return toast.error('Hair is required.')
+    }
+    if (!mobileNumber.trim()) {
+      return toast.error('Telephone Contact is required.')
+    }
+    if (mobileNumber.trim().length != 10) {
+      return toast.error('Invalid Telephone Contact.')
+    }
+    if (!whatsAppNumber) {
+      return toast.error('Whatsapp Contact is required.')
+    }
+    if (whatsAppNumber.trim().length != 10) {
+      return toast.error('Invalid Whatsapp Contact.')
+    }
+    if (!nationality) {
+      return toast.error('Nationality is required.')
+    }
+    if (!paymentMethod.length) {
+      return toast.error('Payment Method is required.')
+    }
+    if (!placeOfService.length) {
+      return toast.error('Place of Service is required.')
+    }
+    if (!pricePerHour.trim()) {
+      return toast.error('Price per hour is required.')
+    }
+    if (!services.length) {
+      return toast.error('Services is required.')
+    }
+    if (!title) {
+      return toast.error('Title is required.')
+    }
+    if (!Object.values(planSelect).length) {
+      return toast.error('Plan is required.')
+    }
+    if (!Object.values(selectSlot).length) {
+      return toast.error('Slot is required.')
+    }
+    if (!profile.length) {
+      return toast.error('Images is required.')
+    }
+
+    const newData = {
+      input: {
+        address: address,
+        age: age,
+        attentionTo: attentionTo,
+        bodyType: bodyType,
+        breast: breast,
+        category: category,
+        categoryId: +categoryId,
+        city: city,
+        description: description,
+        email: email,
+        endTime: dayjs(new Date(+selectSlot?.slots[0]?.endTime)).format(),
+        ethnicity: ethnicity,
+        hair: hair,
+        mobileNumber: mobileNumber,
+        nationality: nationality,
+        paymentMethod: paymentMethod,
+        placeOfService: placeOfService,
+        planId: +planSelect?.id,
+        price: planSelect?.price,
+        pricePerHour: pricePerHour,
+        services: services,
+        startTime: dayjs(new Date(+selectSlot?.slots[0]?.startTime)).format(),
+        state: state_name,
+        title: title,
+        whatsAppNumber: whatsAppNumber,
+        zip: zip
+      },
+      profile: profile
+    }
+
+    const { data, errors } = await createAd({
+      variables: newData
+    })
+    if (errors) {
+      return toast.error(errors.at(-1)?.message, {
+        action: {
+          label: 'Undo'
+        }
+      })
+    }
+    toast.success('Ad Create Successfully.', {
+      action: {
+        label: 'Undo'
+      }
+    })
+  }
   return (
     <div>
       <Container className='lg:w-[80%]'>
@@ -407,7 +569,7 @@ const PostAdsPage = () => {
 
             <div className='items-center gap-2 grid col-span-4 md:col-span-2 w-full'>
               <Label htmlFor='email' className='text-white'>
-                Age
+                Age<span className='text-red-500'>*</span>
               </Label>
               <Input
                 type='text'
@@ -421,7 +583,7 @@ const PostAdsPage = () => {
             </div>
             <div className='items-center gap-2 grid col-span-4 md:col-span-2 w-full'>
               <Label htmlFor='email' className='text-white'>
-                Title
+                Title<span className='text-red-500'>*</span>
               </Label>
               <Input
                 type='text'
@@ -435,7 +597,7 @@ const PostAdsPage = () => {
             </div>
             <div className='items-center gap-2 grid col-span-4 md:col-span-2 w-full'>
               <Label htmlFor='email' className='text-white'>
-                Text
+                Description<span className='text-red-500'>*</span>
               </Label>
               <Input
                 type='text'
@@ -798,7 +960,14 @@ const PostAdsPage = () => {
               <Label htmlFor='email' className='text-white'>
                 Email<span className='text-red-500'>*</span>{' '}
               </Label>
-              <Input placeholder='Enter Emial' className='w-full' />
+              <Input
+                placeholder='Enter Emial'
+                className='w-full'
+                value={state?.email}
+                onChange={e => {
+                  handleChangeValue('email', e.target.value)
+                }}
+              />
             </div>
             <div className='items-center gap-2 grid col-span-4 md:col-span-2 w-full'>
               <Label htmlFor='email' className='text-white'>
@@ -840,10 +1009,18 @@ const PostAdsPage = () => {
               {plansData &&
                 plansData?.modalPlans.map(item => {
                   return (
-                    <GradientColor className='p-[1px] rounded-lg'      key={item?.id}>
+                    <GradientColor
+                      className='p-[1px] rounded-lg'
+                      key={item?.id}
+                    >
                       <div
-                        className='bg-[#2f2f2f] py-6 p-3 rounded-lg'
-                  
+                        className={cn(
+                          'bg-[#2f2f2f] pb-6 rounded-lg cursor-pointer',
+                          planSelect?.id == item?.id
+                            ? 'border-[1px] border-primary'
+                            : null
+                        )}
+                        onClick={() => setPlanSelect(item)}
                       >
                         <div
                           style={{
@@ -851,9 +1028,9 @@ const PostAdsPage = () => {
                             paddingBottom: 'auto',
                             position: 'relative',
                             overflow: 'hidden',
-                            height: '150px'
+                            height: '200px'
                           }}
-                          className='sm:px-6'
+                          // className='sm:px-6'
                         >
                           <img
                             src={item?.image}
@@ -865,26 +1042,81 @@ const PostAdsPage = () => {
                             }}
                           />
                         </div>
-                        <div className='flex flex-col justify-center items-center gap-3 mt-6'>
+                        <div className='flex flex-col justify-center items-center gap-3 mt-6 p-3'>
                           <h2 className='text-white'>{item?.name}</h2>
                           <h1 className='text-2xl text-primary'>
                             Rs.{item?.price}
                           </h1>
                           <GradientColor className='p-[1px] rounded-full w-full'>
-                            <Button className='bg-[#2f2f2f] rounded-full w-full font-semibold text-white hover:text-black'>
+                            <Button
+                              className={cn(
+                                'bg-[#2f2f2f] rounded-full w-full font-semibold text-white hover:text-black',
+                                planSelect?.id == item?.id
+                                  ? 'bg-primary text-black'
+                                  : null
+                              )}
+                            >
                               <span>{item?.credits} Credits</span>
                               <Check />
                             </Button>
                           </GradientColor>
-                          <p className='text-center text-sm text-white'>{item?.description}</p>
+                          <p className='text-center text-sm text-white'>
+                            {item?.description}
+                          </p>
                         </div>
                       </div>
                     </GradientColor>
                   )
                 })}
             </div>
+            {Object.values(planSelect).length &&
+            planSelect?.timeSlots?.length ? (
+              <div className='mt-6'>
+                <p className='text-md text-red-500'>*Please select One slot.</p>
+                <div className='flex flex-wrap gap-2 mt-4'>
+                  {planSelect?.timeSlots
+                    // ?.sort((a, b) => {
+                    //   const startTimeA = +a?.slots[0]?.startTime // Convert to a number for accurate comparison
+                    //   const startTimeB = +b?.slots[0]?.startTime
+                    //   console.log(startTimeA , startTimeB );
+
+                    //   return startTimeA - startTimeB // Sorting in ascending order (earliest first)
+                    // })
+                    ?.map(it => {
+                      return (
+                        <GradientColor
+                          className='p-[1px] rounded-full'
+                          key={it?.timeSlotId}
+                        >
+                          <Button
+                            className={cn(
+                              'bg-[#2f2f2f] rounded-full text-white hover:text-black',
+                              it?.timeSlotId == selectSlot.timeSlotId
+                                ? 'bg-primary text-black'
+                                : null
+                            )}
+                            onClick={() => setSelectSlot(it)}
+                          >
+                            {`${dayjs(
+                              new Date(+it?.slots[0]?.startTime)
+                            ).format('hh:mm A')} - ${dayjs(
+                              new Date(+it?.slots[0]?.endTime)
+                            ).format('hh:mm A')}`}
+                            <Check />
+                          </Button>
+                        </GradientColor>
+                      )
+                    })}
+                </div>
+              </div>
+            ) : null}
           </div>
-          <Button className='mt-8 rounded-full w-full font-semibold text-lg'>Confirm</Button>
+          <Button
+            className='mt-8 rounded-full w-full font-semibold text-lg'
+            onClick={handleSubmit}
+          >
+            Confirm
+          </Button>
         </div>
       </Container>
     </div>

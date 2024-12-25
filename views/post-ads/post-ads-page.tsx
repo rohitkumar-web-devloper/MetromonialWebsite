@@ -658,12 +658,12 @@ const PostAdsPage = () => {
                   <SelectValue placeholder='Select Nationality' />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='indin'>Indian</SelectItem>
-                  <SelectItem value='russian'>Russian</SelectItem>
-                  <SelectItem value='affrican'>Affrican</SelectItem>
-                  <SelectItem value='american'>American</SelectItem>
-                  <SelectItem value='japanese'>Japanese</SelectItem>
-                  <SelectItem value='chinees'>Chinees</SelectItem>
+                  <SelectItem value='Indian'>Indian</SelectItem>
+                  <SelectItem value='Russian'>Russian</SelectItem>
+                  <SelectItem value='Affrican'>Affrican</SelectItem>
+                  <SelectItem value='American'>American</SelectItem>
+                  <SelectItem value='Japanese'>Japanese</SelectItem>
+                  <SelectItem value='Chinees'>Chinees</SelectItem>
                 </SelectContent>
               </Select>
             </div>

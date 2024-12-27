@@ -1,41 +1,52 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client'
 
 export const get_premium_ads = gql`
-  query premiumAds {
-    premiumAds {
-      address
-    age
-    attentionTo
-    bodyType
-    breast
-    category
-    categoryId
-    city
-    createdAt
-    createdById
-    createdByName
-    description
-    email
-    endTime
-    ethnicity
-    hair
-    id
-    message
-    mobileNumber
-    nationality
-    paymentMethod
-    placeOfService
-    planId
-    price
-    pricePerHour
-    profile
-    services
-    startTime
-    state
-    title
-    updatedAt
-    whatsAppNumber
-    zip
+  query premiumAds($page: Int, $pageSize: Int, $filter: AdsFilter) {
+    premiumAds(page: $page, pageSize: $pageSize, filter: $filter) {
+      ads {
+        address
+        age
+        attentionTo {
+          name
+        }
+        bodyType
+        breast
+        category
+        categoryId
+        city
+        createdAt
+        createdById
+        createdByName
+        description
+        email
+        endTime
+        ethnicity
+        hair
+        id
+        mobileNumber
+        nationality
+        paymentMethod
+        placeOfServices {
+          name
+        }
+        planId
+        price
+        pricePerHour
+        profile
+        services {
+          name
+        }
+        startTime
+        state
+        title
+        updatedAt
+        whatsAppNumber
+        zip
+      }
+      page
+      pageSize
+      totalCount
+      totalPages
     }
   }
 `

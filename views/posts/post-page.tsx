@@ -20,17 +20,21 @@ import { Pagination, Autoplay, Navigation } from 'swiper/modules'
 import { useQuery } from '@apollo/client'
 import { get_premium_ads } from '@/GraphQl'
 
-import { ArrowLeft, ArrowRight, BadgeCheck, Blend, User } from 'lucide-react'
+import { BadgeCheck, Blend, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import ImageDisplay from '@/components/ImageDisplay'
-const PostPage = ({ catgory }: PostPageType) => {
+import { useRouter } from 'next/navigation'
+const PostPage = ({ catgory, searchParams }: PostPageType) => {
+  console.log(searchParams, 'searchParams')
+  const route = useRouter()
+
+  const filters = {
+    categoryId: +catgory?.id
+  }
   const { data } = useQuery(get_premium_ads, {
-    variables: { catId: catgory?.id },
+    variables: { page: 1, pageSize: 12, filter: filters },
     skip: !!!catgory?.id
   })
-  console.log(data)
-
-
   return (
     <Container className='my-10'>
       <div>
@@ -42,15 +46,24 @@ const PostPage = ({ catgory }: PostPageType) => {
           className='rounded-full w-full lg:h-[3rem] text-black text-center text-lg'
         />
       </div>
-      {data?.premiumAds.length > 0 && (
+      {data?.premiumAds?.ads.length > 0 && (
         <div className='flex justify-between items-center mt-2'>
           <h1 className='mt-4 text-2xl text-primary'>
             Toppremium {catgory?.name}
           </h1>
-          <Button variant='link'>View all</Button>
+          <Button
+            variant='link'
+            onClick={() =>
+              route.push(
+                `/posts/premium?${new URLSearchParams(searchParams).toString()}`
+              )
+            }
+          >
+            View all
+          </Button>
         </div>
       )}
-      {data?.premiumAds.length > 0 && (
+      {data?.premiumAds?.ads.length > 0 && (
         <div className='mt-4 swiper-container'>
           <Swiper
             breakpoints={{
@@ -71,11 +84,7 @@ const PostPage = ({ catgory }: PostPageType) => {
                 spaceBetween: 15
               }
             }}
-            // navigation={{
-            //   nextEl: '.custom-next', // Custom Next button
-            //   prevEl: '.custom-prev' // Custom Prev button
-            // }}
-              navigation={true}
+            navigation={true}
             modules={[Navigation, Autoplay]}
             autoplay={{
               delay: 10000,
@@ -84,7 +93,7 @@ const PostPage = ({ catgory }: PostPageType) => {
             className='mySwiper'
           >
             {data &&
-              data?.premiumAds?.map((item,) => {
+              data?.premiumAds?.ads?.map(item => {
                 return (
                   <SwiperSlide key={item?.id} className=''>
                     <div className='border-2 border-white bg-[#d4d4d41a] border-opacity-15 rounded-xl cursor-pointer'>

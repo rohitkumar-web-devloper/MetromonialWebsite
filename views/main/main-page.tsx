@@ -40,6 +40,7 @@ const MainPage = () => {
               id='email'
               name='email'
               value=''
+              onChange={() => console.log()}
               onClick={() => setOpen(true)}
               placeholder='Search by city, category...'
               className='bg-white rounded-full w-full lg:h-[3rem] text-black text-center text-lg'

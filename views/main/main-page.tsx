@@ -1,15 +1,17 @@
 'use client'
 import { Container } from '@/layouts'
-import React from 'react'
+import React, { useState } from 'react'
 import BannerImage from '../../assets/banner.jpg'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { useQuery } from '@apollo/client'
 import { homeCategory } from '@/GraphQl'
 import { useRouter } from 'next/navigation'
+import { GlobalSearchModal } from '@/components/GlobalSearch'
 const MainPage = () => {
   const router = useRouter()
   const { data } = useQuery(homeCategory)
+  const [open, setOpen] = useState(false)
   return (
     <div>
       <div>
@@ -37,6 +39,8 @@ const MainPage = () => {
               type='email'
               id='email'
               name='email'
+              value=''
+              onClick={() => setOpen(true)}
               placeholder='Search by city, category...'
               className='bg-white rounded-full w-full lg:h-[3rem] text-black text-center text-lg'
             />
@@ -118,13 +122,10 @@ const MainPage = () => {
                           </h1>
                         </div>
                       </div>
-                      {/* <CardTitle>Create project</CardTitle>
-                                        <CardDescription>Deploy your new project in one-click.</CardDescription> */}
                     </CardHeader>
                     <CardContent className='p-4'>
                       <div>
                         <p className='text-sm text-white'>
-                          {/* Hot and independent escorts ads. Sexy girls ready with their escort services to make you feel satisfied sexually.Women seeking men for a great session with their erotic services. */}
                           {item?.description}
                         </p>
                       </div>
@@ -135,6 +136,7 @@ const MainPage = () => {
             )}
         </div>
       </Container>
+      {open && <GlobalSearchModal open={open} close={() => setOpen(false)} />}
     </div>
   )
 }

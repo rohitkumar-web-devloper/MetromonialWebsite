@@ -247,11 +247,11 @@ const PostAdsPage = () => {
     const files = event.target.files
     if (type == 'profile') {
       if (files.length + state.profile.length > 15) {
-        return toast.error(`Select Max 15 images.`)
+        return toast.error(`Select Max 5 images.`)
       }
     }
     if (files.length > 5) {
-      return toast.error(`Select Max 15 images.`)
+      return toast.error(`Select Max 5 images.`)
     }
 
     if (files && files.length > 0) {

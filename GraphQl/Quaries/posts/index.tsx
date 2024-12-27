@@ -1,37 +1,41 @@
 import { gql } from "@apollo/client";
 
-export const get_ads = gql`
-  query AdsOnCat($catId: ID) {
-    AdsOnCat(catId: $catId) {
-        address
-      age
-      attentionTo
-      bodyType
-      breast
-      category
-      categoryId
-      city
-      createdAt
-      createdById
-      createdByName
-      description
-      district
-      ethnicity
-      hair
-      id
-      message
-      mobileNumber
-      nationality
-      paymentMethod
-      placeOfService
-      pricePerHour
-      profile
-      services
-      success
-      title
-      updatedAt
-      whatsAppNumber
-      zip
+export const get_premium_ads = gql`
+  query premiumAds {
+    premiumAds {
+      address
+    age
+    attentionTo
+    bodyType
+    breast
+    category
+    categoryId
+    city
+    createdAt
+    createdById
+    createdByName
+    description
+    email
+    endTime
+    ethnicity
+    hair
+    id
+    message
+    mobileNumber
+    nationality
+    paymentMethod
+    placeOfService
+    planId
+    price
+    pricePerHour
+    profile
+    services
+    startTime
+    state
+    title
+    updatedAt
+    whatsAppNumber
+    zip
     }
   }
 `

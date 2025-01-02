@@ -54,6 +54,11 @@ const reducer = (state, action) => {
         ...state,
         search: action?.payload
       }
+    case 'city_id':
+      return {
+        ...state,
+        city_id: action?.payload
+      }
 
     case 'ethnicity':
       const checkdata2 = state.ethnicity.some(
@@ -113,6 +118,30 @@ const reducer = (state, action) => {
         ...state,
         placeOfService: placeOfService
       }
+    case 'searchParams':
+      const searchParams = action?.payload
+      return {
+        ...state,
+        categoryId: searchParams?.id,
+        category: searchParams?.name,
+        nationality: searchParams?.country,
+        state_name: searchParams?.state,
+        city: searchParams?.city,
+        city_id: searchParams?.city_id,
+        ethnicity: searchParams?.ethnicity
+          ? searchParams?.ethnicity.split(',')
+          : [],
+        bodyType: searchParams?.bodyType
+          ? searchParams?.bodyType.split(',')
+          : [],
+        services: searchParams?.services
+          ? searchParams?.services.split(',')
+          : [],
+        // placeOfService,
+        // attentionTo,
+        state_code: searchParams?.state_code
+      }
+
     default:
       return state
   }
@@ -125,8 +154,12 @@ import {
   SelectValue
 } from './ui/select'
 import { Input } from './ui/input'
+
 import { cn } from '@/lib/utils'
-const GlobalSearchModal = ({ open, close }) => {
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+const GlobalSearchModal = ({ open, close, searchParams }) => {
+  const router = useRouter()
   const [state, dispatch] = useReducer(reducer, {
     category: '',
     categoryId: '',
@@ -140,7 +173,8 @@ const GlobalSearchModal = ({ open, close }) => {
     services: [],
     attentionTo: [],
     placeOfService: [],
-    search: ''
+    search: '',
+    city_id: ''
   })
   const [states, setStates] = useState([])
   const [cities, setCities] = useState([])
@@ -164,6 +198,51 @@ const GlobalSearchModal = ({ open, close }) => {
       setCities(cityData?.modalCities)
     }
   }, [cityData])
+  const handleSubmit = () => {
+    const {
+      categoryId,
+      category,
+      nationality,
+      state_name,
+      city,
+      ethnicity,
+      bodyType,
+      services,
+      placeOfService,
+      attentionTo,
+      state_code,
+      city_id
+    } = state
+    if (!categoryId) {
+      toast.error('Category is required.')
+      return
+    }
+
+    const data = {
+      id: categoryId,
+      name: category,
+      country: nationality,
+      state: state_name,
+      state_code: state_code,
+      city: city,
+      city_id: city_id,
+      ethnicity: ethnicity.join(','),
+      bodyType: bodyType.join(','),
+      services: services.join(','),
+      placeOfService: placeOfService.join(','),
+      attentionTo: attentionTo.join(',')
+    }
+    router.push(`/posts?data=${JSON.stringify(data)}`)
+    close()
+  }
+
+  useEffect(() => {
+    if (searchParams) {
+      handleChangeValue('searchParams', searchParams)
+    }
+  }, [open])
+  console.log(state, '===>>>>>')
+
   return (
     <div>
       <Dialog open={open} onOpenChange={close}>
@@ -264,7 +343,11 @@ const GlobalSearchModal = ({ open, close }) => {
                 <Select
                   value={state?.city}
                   onValueChange={(value: string) => {
-                    handleChangeValue('city', value)
+                    const items = cities.find(
+                      (it: { name: string; id: string }) => it?.id == value
+                    ) as unknown as { id: string }
+                    handleChangeValue('city', items?.name)
+                    handleChangeValue('city_id', items?.id)
                   }}
                 >
                   <SelectTrigger className='bg-[#d4d4d41a] w-full text-white'>
@@ -273,7 +356,7 @@ const GlobalSearchModal = ({ open, close }) => {
                   <SelectContent>
                     {cities?.map((it: { name: string; id: string }) => {
                       return (
-                        <SelectItem value={it?.name} key={it?.id}>
+                        <SelectItem value={it?.id} key={it?.id}>
                           {it?.name}
                         </SelectItem>
                       )
@@ -458,7 +541,11 @@ const GlobalSearchModal = ({ open, close }) => {
             <Button type='button' onClick={close}>
               Clear
             </Button>
-            <Button type='button' className='font-semibold'>
+            <Button
+              type='button'
+              className='font-semibold'
+              onClick={handleSubmit}
+            >
               Apply
             </Button>
           </DialogFooter>

@@ -1,13 +1,13 @@
 'use client'
 import { Input } from '@/components/ui/input'
 import { Container } from '@/layouts'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 interface CatgoryType {
   id: number
   name: string
 }
 interface PostPageType {
-  catgory: CatgoryType
+  data: CatgoryType
 }
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -19,21 +19,41 @@ import 'swiper/css/navigation'
 import { Pagination, Autoplay, Navigation } from 'swiper/modules'
 import { useQuery } from '@apollo/client'
 import { get_premium_ads } from '@/GraphQl'
-
-import { BadgeCheck, Blend, User } from 'lucide-react'
+import { ArrowLeft, BadgeCheck, Blend, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import ImageDisplay from '@/components/ImageDisplay'
 import { useRouter } from 'next/navigation'
-const PostPage = ({ catgory, searchParams }: PostPageType) => {
-  console.log(searchParams, 'searchParams')
-  const route = useRouter()
-
+import { Skeleton } from '@/components/ui/skeleton'
+import Image from 'next/image'
+import No_Data from '../../assets/no_feedback-67e33c89.svg'
+import { GlobalSearchModal } from '@/components/GlobalSearch'
+const PostPage = ({ searchParams }: PostPageType) => {
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
   const filters = {
-    categoryId: +catgory?.id
+    categoryId: +searchParams?.id,
+    attentionTo: searchParams?.attentionTo
+      ? searchParams?.attentionTo?.split(',')
+      : undefined,
+    // breast: null,
+    city: searchParams?.city || undefined,
+    ethnicity: searchParams?.ethnicity
+      ? // ? searchParams?.ethnicity.split(',')
+        searchParams?.ethnicity
+      : undefined,
+    // hair: null,
+    nationality: searchParams?.country || undefined,
+    placeOfService: searchParams?.placeOfService
+      ? searchParams?.placeOfService?.split(',')
+      : undefined,
+    services: searchParams?.services
+      ? searchParams?.services.split(',')
+      : undefined,
+    state: searchParams?.state ? searchParams?.state : undefined
   }
-  const { data } = useQuery(get_premium_ads, {
+  const { data, loading } = useQuery(get_premium_ads, {
     variables: { page: 1, pageSize: 12, filter: filters },
-    skip: !!!catgory?.id
+    // skip: !!!searchParams?.id
   })
   return (
     <Container className='my-10'>
@@ -41,6 +61,9 @@ const PostPage = ({ catgory, searchParams }: PostPageType) => {
         <Input
           type='email'
           id='email'
+          value=''
+          onChange={() => console.log()}
+          onClick={() => setOpen(true)}
           name='email'
           placeholder='Search by city, category...'
           className='rounded-full w-full lg:h-[3rem] text-black text-center text-lg'
@@ -48,19 +71,48 @@ const PostPage = ({ catgory, searchParams }: PostPageType) => {
       </div>
       {data?.premiumAds?.ads.length > 0 && (
         <div className='flex justify-between items-center mt-2'>
-          <h1 className='mt-4 text-2xl text-primary'>
-            Toppremium {catgory?.name}
+           <h1 className='flex items-center gap-2 mt-4 text-2xl text-primary'>
+            <ArrowLeft
+              className='cursor-pointer'
+              onClick={() => router.back()}
+            />
+               Toppremium {searchParams?.name}
           </h1>
           <Button
             variant='link'
             onClick={() =>
-              route.push(
-                `/posts/premium?${new URLSearchParams(searchParams).toString()}`
+              router.push(
+                `/posts/premium?data=${JSON.stringify(searchParams)}`
               )
             }
           >
             View all
           </Button>
+        </div>
+      )}
+      {loading && (
+        <div className='gap-4 grid grid-cols-4 mt-6'>
+          {[...Array(4)].map((_, index) => {
+            return (
+              <div className='flex flex-col space-y-3' key={index}>
+                <Skeleton className='rounded-xl h-[200px]' />
+                <div className='space-y-2'>
+                  <Skeleton className='w-[250px] h-4' />
+                  <Skeleton className='w-[250px] h-4' />
+                  <div className='flex gap-2'>
+                    <Skeleton className='w-[100px] h-4' />
+                    <Skeleton className='w-[80px] h-4' />
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+      {!loading && data?.premiumAds?.ads.length == 0 && (
+        <div className='flex flex-col justify-center items-center mt-10'>
+          <Image src={No_Data} alt='no data' width={400} height={400} />
+          <h1 className='mt-4 text-2xl text-primary'>No data found...</h1>
         </div>
       )}
       {data?.premiumAds?.ads.length > 0 && (
@@ -85,11 +137,11 @@ const PostPage = ({ catgory, searchParams }: PostPageType) => {
               }
             }}
             navigation={true}
-            modules={[Navigation, Autoplay]}
-            autoplay={{
-              delay: 10000,
-              disableOnInteraction: false
-            }}
+            modules={[Navigation]}
+            // autoplay={{
+            //   delay: 10000,
+            //   disableOnInteraction: false
+            // }}
             className='mySwiper'
           >
             {data &&
@@ -99,14 +151,14 @@ const PostPage = ({ catgory, searchParams }: PostPageType) => {
                     <div className='border-2 border-white bg-[#d4d4d41a] border-opacity-15 rounded-xl cursor-pointer'>
                       <Swiper
                         slidesPerView={1}
-                        pagination={{
-                          clickable: true
-                        }}
-                        autoplay={{
-                          delay: 2500,
-                          disableOnInteraction: false
-                        }}
-                        modules={[Autoplay]}
+                        // pagination={{
+                        //   clickable: true
+                        // }}
+                        // autoplay={{
+                        //   delay: 2500,
+                        //   disableOnInteraction: false
+                        // }}
+                        // modules={[Autoplay]}
                       >
                         {JSON.parse(item?.profile).map(it => {
                           return (
@@ -150,6 +202,7 @@ const PostPage = ({ catgory, searchParams }: PostPageType) => {
           </Swiper>
         </div>
       )}
+      {open && <GlobalSearchModal open={open} close={() => setOpen(false)} searchParams={searchParams} />}
     </Container>
   )
 }

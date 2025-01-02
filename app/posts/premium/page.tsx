@@ -6,6 +6,6 @@ export default async function page ({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const data = await searchParams
-  return <PremiumPostPage catgory={JSON.parse(data?.catgory)}  />
+  const { data } = await searchParams
+  return <PremiumPostPage  searchParams={JSON.parse(data)}  />
 }

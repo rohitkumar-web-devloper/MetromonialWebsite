@@ -86,12 +86,12 @@ const MainPage = () => {
                     key={index}
                     onClick={() =>
                       router.push(
-                        `/posts?catgory=${encodeURIComponent(
+                        `/posts?data=${
                           JSON.stringify({
                             id: item?.id,
                             name: item?.name
                           })
-                        )}`
+                        }`
                       )
                     }
                   >

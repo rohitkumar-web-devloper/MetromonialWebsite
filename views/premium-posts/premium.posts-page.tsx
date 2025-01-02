@@ -1,7 +1,7 @@
 'use client'
 import { Input } from '@/components/ui/input'
 import { Container } from '@/layouts'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 interface CatgoryType {
   id: number
   name: string
@@ -19,37 +19,71 @@ import 'swiper/css/navigation'
 import { Autoplay } from 'swiper/modules'
 import { useQuery } from '@apollo/client'
 import { get_premium_ads } from '@/GraphQl'
-import { BadgeCheck, Blend, User } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ArrowLeft, BadgeCheck, Blend, User } from 'lucide-react'
 import ImageDisplay from '@/components/ImageDisplay'
 import { Skeleton } from '@/components/ui/skeleton'
-const PremiumPostPage = ({ catgory }: PostPageType) => {
+import { useRouter } from 'next/navigation'
+import { GlobalSearchModal } from '@/components/GlobalSearch'
+const PremiumPostPage = ({ searchParams }: PostPageType) => {
+  const [open, setOpen] = useState(false)
+  const router = useRouter()
   const filters = {
-    categoryId: +catgory?.id
+    categoryId: +searchParams?.id,
+    attentionTo: searchParams?.attentionTo
+      ? searchParams?.attentionTo?.split(',')
+      : undefined,
+    // breast: null,
+    city: searchParams?.city || undefined,
+    ethnicity: searchParams?.ethnicity
+      ? // ? searchParams?.ethnicity.split(',')
+        searchParams?.ethnicity
+      : undefined,
+    // hair: null,
+    nationality: searchParams?.country || undefined,
+    placeOfService: searchParams?.placeOfService
+      ? searchParams?.placeOfService?.split(',')
+      : undefined,
+    services: searchParams?.services
+      ? searchParams?.services.split(',')
+      : undefined,
+    state: searchParams?.state ? searchParams?.state : undefined
   }
   const { data, loading } = useQuery(get_premium_ads, {
-    variables: { page: 1, pageSize: 12, filter: filters },
-    skip: !!!catgory?.id
+    variables: { page: 1, pageSize: 12, filter: filters }
+    // skip: !!!searchParams?.id
   })
   return (
     <Container className='my-10'>
       {data?.premiumAds?.ads.length > 0 && (
         <div className='flex justify-between items-center mt-2'>
-          <h1 className='mt-4 text-2xl text-primary'>
-            Toppremium {catgory?.name}
+          <h1 className='flex items-center gap-2 mt-4 text-2xl text-primary'>
+            <ArrowLeft
+              className='cursor-pointer'
+              onClick={() => router.back()}
+            />
+            Toppremium {searchParams?.name}
           </h1>
         </div>
-      )}
-      {/* <div>
-        <div className='flex flex-col space-y-3'>
-          <Skeleton className='rounded-xl w-[250px] h-[125px]' />
-          <div className='space-y-2'>
-            <Skeleton className='w-[250px] h-4' />
-            <Skeleton className='w-[200px] h-4' />
-          </div>
+      )}{' '}
+      {loading && (
+        <div className='gap-4 grid grid-cols-4 mt-6'>
+          {[...Array(8)].map((_, index) => {
+            return (
+              <div className='flex flex-col space-y-3' key={index}>
+                <Skeleton className='rounded-xl h-[200px]' />
+                <div className='space-y-2'>
+                  <Skeleton className='w-[250px] h-4' />
+                  <Skeleton className='w-[250px] h-4' />
+                  <div className='flex gap-2'>
+                    <Skeleton className='w-[100px] h-4' />
+                    <Skeleton className='w-[80px] h-4' />
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
-      </div> */}
-
+      )}
       {data?.premiumAds?.ads.length > 0 && (
         <div className='gap-4 grid grid-cols-4 mt-4'>
           {data &&
@@ -109,6 +143,13 @@ const PremiumPostPage = ({ catgory }: PostPageType) => {
               )
             })}
         </div>
+      )}
+      {open && (
+        <GlobalSearchModal
+          open={open}
+          close={() => setOpen(false)}
+          searchParams={searchParams}
+        />
       )}
     </Container>
   )

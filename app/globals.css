@@ -66,6 +66,11 @@ body {
 body {
   background: #000000f3;
 }
+@media (max-width: 768px) {
+  html {
+    font-size: 90%; /* Adjust font size for mobile */
+  }
+}
 .line {
   background: -webkit-gradient(
     linear,

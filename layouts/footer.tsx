@@ -3,37 +3,23 @@ import FaceBookIcon from '../assets/social/facebook.svg'
 import InstagramIcon from '../assets/social/instagram.svg'
 import LinkDinIcon from '../assets/social/linkedin.svg'
 import Image from 'next/image'
-import { Separator } from '@/components/ui/separator'
+import Logo from '../assets/logo3.png'
+import { useRouter } from 'next/navigation'
 const Footer = () => {
+    const router = useRouter()
     return (
-        <div className='nav-bg py-4 px-6 '>
-            <div className='flex justify-between md:max-w-[80%] mx-auto items-center'>
+        <div className='nav-bg py-4 px-6  z-50'>
+            <div className='flex justify-between md:max-w-[90%] mx-auto items-center'>
                 <div>
-                    <h1 className='text-white'>Logo</h1>
+                    <Image src={Logo} width={160} height={70} alt='logo' className='cursor-pointer' onClick={() => router.push('/')} />
                 </div>
                 <div className='flex gap-2'>
-                    <Image src={FaceBookIcon} alt='facebook' className=" cursor-pointer" width={50} height={50} />
-                    <Image src={InstagramIcon} alt='instagram' width={50} height={50} className=" cursor-pointer" />
-                    <Image src={LinkDinIcon} alt='linkdin' width={50} height={50} className=" cursor-pointer" />
+                    <Image src={FaceBookIcon} alt='facebook' className=" cursor-pointer" width={40} height={40} />
+                    <Image src={InstagramIcon} alt='instagram' width={40} height={40} className=" cursor-pointer" />
 
                 </div>
 
             </div>
-            <div className='flex justify-center md:max-w-[80%] mx-auto items-center mb-4'>
-                <div className="flex h-5 items-center space-x-4 text-sm">
-                    <h2 className='text-white hover:text-primary cursor-pointer'>Terms and Conditions</h2>
-                    <Separator orientation="vertical" />
-                    <h2 className='text-white hover:text-primary cursor-pointer'> Privacy Policy</h2>
-                    <Separator orientation="vertical" />
-                    <h2 className='text-white hover:text-primary cursor-pointer'> Contacts Us</h2>
-                    <Separator orientation="vertical" />
-                    <h2 className='text-white hover:text-primary cursor-pointer'> Manage your ad</h2>
-                    <Separator orientation="vertical" />
-                    <h2 className='text-white hover:text-primary cursor-pointer'>  Promote your ads</h2>
-                </div>
-
-            </div>
-
         </div>
     )
 }

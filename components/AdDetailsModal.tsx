@@ -91,7 +91,7 @@ const AdsDetailsModal = ({ open, close, selectedData }) => {
                   </div>
                 </div>
                 <h1 className='mt-2 text-primary'>Attention to</h1>
-                <div className='flex gap-2 mt-1'>
+                <div className='flex gap-2 mt-1 flex-wrap'>
                   {selectedData?.attentionTo.map(item => {
                     return (
                       <div
@@ -122,7 +122,7 @@ const AdsDetailsModal = ({ open, close, selectedData }) => {
                   </div>
                 </div>
                 <h1 className='mt-2 text-primary'>Place of Services</h1>
-                <div className='flex gap-2 mt-1'>
+                <div className='flex gap-2 mt-1 flex-wrap'>
                   {selectedData?.placeOfServices.map(it => {
                     return (
                       <div

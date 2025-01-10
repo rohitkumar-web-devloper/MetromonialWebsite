@@ -24,21 +24,27 @@ import ImageDisplay from '@/components/ImageDisplay'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRouter } from 'next/navigation'
 import { GlobalSearchModal } from '@/components/GlobalSearch'
+import { AdsDetailsModal } from '@/components/AdDetailsModal'
+import { useModalControl, usePagination } from '@/hooks'
+import { useInView } from "react-intersection-observer";
 const PremiumPostPage = ({ searchParams }: PostPageType) => {
   const [open, setOpen] = useState(false)
+  const [selectedData, setSelectedData] = useState()
+  const { page, setPage } = usePagination()
   const router = useRouter()
+  const { ref, inView, entry } = useInView({
+    threshold: 0,
+  });
   const filters = {
     categoryId: +searchParams?.id,
     attentionTo: searchParams?.attentionTo
       ? searchParams?.attentionTo?.split(',')
       : undefined,
-    // breast: null,
     city: searchParams?.city || undefined,
     ethnicity: searchParams?.ethnicity
-      ? // ? searchParams?.ethnicity.split(',')
-        searchParams?.ethnicity
+      ?
+      searchParams?.ethnicity
       : undefined,
-    // hair: null,
     nationality: searchParams?.country || undefined,
     placeOfService: searchParams?.placeOfService
       ? searchParams?.placeOfService?.split(',')
@@ -48,13 +54,32 @@ const PremiumPostPage = ({ searchParams }: PostPageType) => {
       : undefined,
     state: searchParams?.state ? searchParams?.state : undefined
   }
+  const [limit, setLimit] = useState(false)
+  const [adsData, setAdsData] = useState([])
   const { data, loading } = useQuery(get_premium_ads, {
-    variables: { page: 1, pageSize: 12, filter: filters }
-    // skip: !!!searchParams?.id
+    variables: { page: page, pageSize: 15, filter: filters }
   })
+
+  useEffect(() => {
+    if (data) {
+      setLimit(data?.premiumAds?.ads.length)
+      setAdsData((prevAds) => [...prevAds, ...data?.premiumAds?.ads]);
+    }
+  }, [data])
+  const {
+    open: isAddOpen,
+    handleCloseModal,
+    handleOpenModal
+  } = useModalControl()
+  useEffect(() => {
+    if (inView && limit) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  }, [inView])
+
   return (
     <Container className='my-10'>
-      {data?.premiumAds?.ads.length > 0 && (
+      {adsData.length > 0 && (
         <div className='flex justify-between items-center mt-2'>
           <h1 className='flex items-center gap-2 mt-4 text-2xl text-primary'>
             <ArrowLeft
@@ -65,8 +90,8 @@ const PremiumPostPage = ({ searchParams }: PostPageType) => {
           </h1>
         </div>
       )}{' '}
-      {loading && (
-        <div className='gap-4 grid grid-cols-4 mt-6'>
+      {(loading && page == 1) && (
+        <div className='gap-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-6'>
           {[...Array(8)].map((_, index) => {
             return (
               <div className='flex flex-col space-y-3' key={index}>
@@ -84,14 +109,18 @@ const PremiumPostPage = ({ searchParams }: PostPageType) => {
           })}
         </div>
       )}
-      {data?.premiumAds?.ads.length > 0 && (
-        <div className='gap-4 grid grid-cols-4 mt-4'>
-          {data &&
-            data?.premiumAds?.ads?.map(item => {
+      {adsData.length > 0 && (
+        <div className='gap-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-4'>
+          {
+            adsData?.map(item => {
               return (
                 <div
                   className='border-2 border-white bg-[#d4d4d41a] border-opacity-15 rounded-xl cursor-pointer'
                   key={item?.id}
+                  onClick={() => {
+                    handleOpenModal()
+                    setSelectedData(item)
+                  }}
                 >
                   <Swiper
                     slidesPerView={1}
@@ -144,11 +173,38 @@ const PremiumPostPage = ({ searchParams }: PostPageType) => {
             })}
         </div>
       )}
+      {(adsData.length && limit) && <div ref={ref}>
+        <div className='gap-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-6'>
+          {[...Array(4)].map((_, index) => {
+            return (
+              <div className='flex flex-col space-y-3' key={index}>
+                <Skeleton className='rounded-xl h-[200px]' />
+                <div className='space-y-2'>
+                  <Skeleton className='w-[250px] h-4' />
+                  <Skeleton className='w-[250px] h-4' />
+                  <div className='flex gap-2'>
+                    <Skeleton className='w-[100px] h-4' />
+                    <Skeleton className='w-[80px] h-4' />
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+      </div>}
       {open && (
         <GlobalSearchModal
           open={open}
           close={() => setOpen(false)}
           searchParams={searchParams}
+        />
+      )}
+      {isAddOpen && (
+        <AdsDetailsModal
+          open={isAddOpen}
+          close={handleCloseModal}
+          selectedData={selectedData}
         />
       )}
     </Container>

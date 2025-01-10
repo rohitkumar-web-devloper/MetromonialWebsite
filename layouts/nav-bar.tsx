@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Plus, User, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { userInfoStore } from '@/stores'
+import Logo from '../assets/logo3.png'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -21,19 +22,20 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import {
-    Cloud,
-    CreditCard,
-    Github,
-    Keyboard,
-    LifeBuoy,
-    LogOut,
-    Mail,
-    MessageSquare,
-    PlusCircle,
-    Settings,
-    UserPlus,
-    Users,
-  } from "lucide-react"
+  Cloud,
+  CreditCard,
+  Github,
+  Keyboard,
+  LifeBuoy,
+  LogOut,
+  Mail,
+  MessageSquare,
+  PlusCircle,
+  Settings,
+  UserPlus,
+  Users,
+} from "lucide-react"
+import Image from 'next/image'
 const NavBarComp = () => {
   const router = useRouter()
   const { user } = userInfoStore()
@@ -41,7 +43,8 @@ const NavBarComp = () => {
     <header className='top-0 left-0 z-50 sticky py-4 w-full nav-bg'>
       <Container className=''>
         <div className='flex justify-between items-center'>
-          <h1>Logo</h1>
+          {/* <h1>Logo</h1> */}
+          <Image src={Logo} width={160} height={70} alt='logo'className='cursor-pointer'  onClick={() => router.push('/')}/>
           <div className='flex gap-3'>
             {/* <Button className='rounded-full' variant="outline" size="icon" >
                             <Search />
@@ -69,11 +72,14 @@ const NavBarComp = () => {
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push('/dashboard')}>
                         <User />
                         <span>Profile</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        localStorage.clear()
+                        window.location.reload()
+                      }}>
                         <LogOut />
                         <span>Log out</span>
                       </DropdownMenuItem>

@@ -537,8 +537,9 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
               </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button type='button' onClick={close}>
+          <DialogFooter >
+          <div className=' flex gap-2 justify-end'>
+          <Button type='button' onClick={close}>
               Clear
             </Button>
             <Button
@@ -548,6 +549,7 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
             >
               Apply
             </Button>
+          </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: false,
   env:{
     MAPS_API_KEY: process.env.MAPS_API_KEY,
+  },
+  images:{
+    domains:[
+      'localhost:7575','localhost'
+    ]
   }
 };
 

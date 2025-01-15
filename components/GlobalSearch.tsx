@@ -59,24 +59,20 @@ const reducer = (state, action) => {
         ...state,
         city_id: action?.payload
       }
-
     case 'ethnicity':
-      const checkdata2 = state.ethnicity.some(
-        (it: string) => it == action?.payload
-      )
-        ? state.ethnicity.filter((it: string) => it != action?.payload)
-        : [...state.ethnicity, action?.payload]
       return {
         ...state,
-        ethnicity: checkdata2
+        ethnicity: action?.payload == state.ethnicity ? '' : action?.payload
       }
     case 'breast':
-      const breast = state.breast.some((it: string) => it == action?.payload)
-        ? state.breast.filter((it: string) => it != action?.payload)
-        : [...state.breast, action?.payload]
       return {
         ...state,
-        breast: breast
+        breast: action?.payload == state.breast ? '' : action?.payload
+      }
+    case 'hair':
+      return {
+        ...state,
+        hair: action?.payload == state.hair ? '' : action?.payload
       }
     case 'bodyType':
       const bodyType = state.bodyType.some(
@@ -129,17 +125,23 @@ const reducer = (state, action) => {
         city: searchParams?.city,
         city_id: searchParams?.city_id,
         ethnicity: searchParams?.ethnicity
-          ? searchParams?.ethnicity.split(',')
+          ? searchParams?.ethnicity
           : [],
         bodyType: searchParams?.bodyType
-          ? searchParams?.bodyType.split(',')
+          ? searchParams?.bodyType
           : [],
         services: searchParams?.services
           ? searchParams?.services.split(',')
           : [],
-        // placeOfService,
-        // attentionTo,
-        state_code: searchParams?.state_code
+        placeOfService: searchParams?.placeOfService
+          ? searchParams?.placeOfService.split(',')
+          : [],
+        attentionTo: searchParams?.attentionTo
+          ? searchParams?.attentionTo.split(',')
+          : [],
+        state_code: searchParams?.state_code,
+        hair: searchParams?.hair,
+        breast: searchParams?.breast,
       }
 
     default:
@@ -167,9 +169,10 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
     state_name: '',
     state_code: '',
     city: '',
-    ethnicity: [],
-    breast: [],
-    bodyType: [],
+    ethnicity: '',
+    breast: '',
+    hair: '',
+    bodyType: '',
     services: [],
     attentionTo: [],
     placeOfService: [],
@@ -211,7 +214,10 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
       placeOfService,
       attentionTo,
       state_code,
-      city_id
+      city_id,
+      hair,
+      breast,
+      search
     } = state
     if (!categoryId) {
       toast.error('Category is required.')
@@ -226,11 +232,16 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
       state_code: state_code,
       city: city,
       city_id: city_id,
-      ethnicity: ethnicity.join(','),
+      ethnicity: ethnicity,
       bodyType: bodyType.join(','),
       services: services.join(','),
       placeOfService: placeOfService.join(','),
-      attentionTo: attentionTo.join(',')
+      attentionTo: attentionTo.join(','),
+      hair: hair,
+      breast: breast,
+      search:search
+
+
     }
     router.push(`/posts?data=${JSON.stringify(data)}`)
     close()
@@ -341,7 +352,7 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
               </div>
               <div className='col-span-6 md:col-span-4'>
                 <Select
-                  value={state?.city}
+                  value={state?.city_id}
                   onValueChange={(value: string) => {
                     const items = cities.find(
                       (it: { name: string; id: string }) => it?.id == value
@@ -378,8 +389,8 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
               <div className='flex flex-col gap-2'>
                 <h2 className='text-primary' style={{ letterSpacing: '1px' }}>
                   Ethnicity{' '}
-                  {state?.ethnicity.length > 0
-                    ? `(${state?.ethnicity.length})`
+                  {state?.ethnicity?.length > 0
+                    ? `(1)`
                     : null}
                 </h2>
                 <div className='flex flex-wrap gap-2'>
@@ -396,7 +407,7 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
                         key={item}
                         className={cn(
                           'px-4 rounded-lg cursor-pointer py-2 border border-white border-opacity-20',
-                          state?.ethnicity.includes(item)
+                          state?.ethnicity == item
                             ? 'border-primary bg-primary bg-opacity-20'
                             : ''
                         )}
@@ -408,7 +419,7 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
                   })}
                 </div>
               </div>
-              <div className='flex flex-col gap-2'>
+              {/* <div className='flex flex-col gap-2'>
                 <h2 className='text-primary' style={{ letterSpacing: '1px' }}>
                   Body type{' '}
                   {state?.bodyType.length > 0
@@ -433,12 +444,64 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
                     )
                   })}
                 </div>
+              </div> */}
+              <div className='flex flex-col gap-2'>
+                <h2 className='text-primary' style={{ letterSpacing: '1px' }}>
+                  Breast{' '}
+                  {state?.breast?.length > 0
+                    ? `(1)`
+                    : null}
+                </h2>
+                <div className='flex flex-wrap gap-2'>
+                  {['Natural Boobs', 'Busty'].map(item => {
+                    return (
+                      <div
+                        key={item}
+                        className={cn(
+                          'px-4 rounded-lg cursor-pointer py-2 border border-white border-opacity-20',
+                          state?.breast == item
+                            ? 'border-primary bg-primary bg-opacity-20'
+                            : ''
+                        )}
+                        onClick={() => handleChangeValue('breast', item)}
+                      >
+                        <p className='text-sm text-white'>{item}</p>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+              <div className='flex flex-col gap-2'>
+                <h2 className='text-primary' style={{ letterSpacing: '1px' }}>
+                  Hair{' '}
+                  {state?.hair.length > 0
+                    ? `(1)`
+                    : null}
+                </h2>
+                <div className='flex flex-wrap gap-2'>
+                  {['Blond Hair', 'Brown Hair', 'Black Hair', 'Red Hair'].map(item => {
+                    return (
+                      <div
+                        key={item}
+                        className={cn(
+                          'px-4 rounded-lg cursor-pointer py-2 border border-white border-opacity-20',
+                          state?.hair == item
+                            ? 'border-primary bg-primary bg-opacity-20'
+                            : ''
+                        )}
+                        onClick={() => handleChangeValue('hair', item)}
+                      >
+                        <p className='text-sm text-white'>{item}</p>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
               <div className='flex flex-col gap-2'>
                 <h2 className='text-primary' style={{ letterSpacing: '1px' }}>
                   Services{' '}
-                  {state?.services.length > 0
-                    ? `(${state?.services.length})`
+                  {state?.services?.length > 0
+                    ? `(${state?.services?.length})`
                     : null}
                 </h2>
                 <div className='flex flex-wrap gap-2'>
@@ -478,8 +541,8 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
               <div className='flex flex-col gap-2'>
                 <h2 className='text-primary' style={{ letterSpacing: '1px' }}>
                   Attention to{' '}
-                  {state?.attentionTo.length > 0
-                    ? `(${state?.attentionTo.length})`
+                  {state?.attentionTo?.length > 0
+                    ? `(${state?.attentionTo?.length})`
                     : null}
                 </h2>
                 <div className='flex flex-wrap gap-2'>
@@ -504,8 +567,8 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
               <div className='flex flex-col gap-2'>
                 <h2 className='text-primary' style={{ letterSpacing: '1px' }}>
                   Place of service{' '}
-                  {state?.placeOfService.length > 0
-                    ? `(${state?.placeOfService.length})`
+                  {state?.placeOfService?.length > 0
+                    ? `(${state?.placeOfService?.length})`
                     : null}
                 </h2>
                 <div className='flex flex-wrap gap-2'>
@@ -538,18 +601,18 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
             </div>
           </div>
           <DialogFooter >
-          <div className=' flex gap-2 justify-end'>
-          <Button type='button' onClick={close}>
-              Clear
-            </Button>
-            <Button
-              type='button'
-              className='font-semibold'
-              onClick={handleSubmit}
-            >
-              Apply
-            </Button>
-          </div>
+            <div className=' flex gap-2 justify-end'>
+              <Button type='button' onClick={close}>
+                Clear
+              </Button>
+              <Button
+                type='button'
+                className='font-semibold'
+                onClick={handleSubmit}
+              >
+                Apply
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

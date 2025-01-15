@@ -52,7 +52,10 @@ const PremiumPostPage = ({ searchParams }: PostPageType) => {
     services: searchParams?.services
       ? searchParams?.services.split(',')
       : undefined,
-    state: searchParams?.state ? searchParams?.state : undefined
+    state: searchParams?.state ? searchParams?.state : undefined,
+    breast: searchParams?.breast ? searchParams?.breast : undefined,
+    hair: searchParams?.hair ? searchParams?.hair : undefined,
+    search: searchParams?.search ? searchParams?.search : undefined,
   }
   const [limit, setLimit] = useState(false)
   const [adsData, setAdsData] = useState([])

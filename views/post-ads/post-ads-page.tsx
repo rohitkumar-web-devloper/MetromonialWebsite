@@ -256,12 +256,18 @@ const PostAdsPage = () => {
 
     if (files && files.length > 0) {
       const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']
+      const maxFileSize = 500 * 1024;
       Array.from(files).forEach(file => {
         if (!allowedTypes.includes(file.type)) {
           toast.error(
             `Only PNG, JPG, and JPEG files are allowed for ${file?.name}.`
           )
           return
+        }
+        if (file.size > maxFileSize) {
+          return toast.error(
+            `${file.name} exceeds the maximum size of 500KB.`
+          );
         }
         const reader = new FileReader()
         reader.onload = e => {
@@ -406,6 +412,7 @@ const PostAdsPage = () => {
         paymentMethod: paymentMethod,
         placeOfService: placeOfService,
         planId: +planSelect?.id,
+        planType: planSelect?.type,
         price: planSelect?.price,
         pricePerHour: pricePerHour,
         services: services,
@@ -433,6 +440,7 @@ const PostAdsPage = () => {
         label: 'Undo'
       }
     })
+    router.push('/')
   }
   return (
     <div>

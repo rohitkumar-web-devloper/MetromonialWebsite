@@ -18,7 +18,7 @@ import 'swiper/css/navigation'
 // import required modules
 import { Pagination, Autoplay, Navigation } from 'swiper/modules'
 import { useQuery } from '@apollo/client'
-import { get_premium_ads } from '@/GraphQl'
+import { get_normal_ads, get_premium_ads } from '@/GraphQl'
 import { ArrowLeft, BadgeCheck, Blend, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import ImageDisplay from '@/components/ImageDisplay'
@@ -28,7 +28,8 @@ import Image from 'next/image'
 import No_Data from '../../assets/no_feedback-67e33c89.svg'
 import { GlobalSearchModal } from '@/components/GlobalSearch'
 import { AdsDetailsModal } from '@/components/AdDetailsModal'
-import { useModalControl } from '@/hooks'
+import { useModalControl, usePagination } from '@/hooks'
+import { useInView } from 'react-intersection-observer'
 const PostPage = ({ searchParams }: PostPageType) => {
   const router = useRouter()
   const [open, setOpen] = useState(false)
@@ -43,13 +44,11 @@ const PostPage = ({ searchParams }: PostPageType) => {
     attentionTo: searchParams?.attentionTo
       ? searchParams?.attentionTo?.split(',')
       : undefined,
-    // breast: null,
     city: searchParams?.city || undefined,
     ethnicity: searchParams?.ethnicity
-      ? // ? searchParams?.ethnicity.split(',')
-        searchParams?.ethnicity
+      ? 
+      searchParams?.ethnicity
       : undefined,
-    // hair: null,
     nationality: searchParams?.country || undefined,
     placeOfService: searchParams?.placeOfService
       ? searchParams?.placeOfService?.split(',')
@@ -57,12 +56,35 @@ const PostPage = ({ searchParams }: PostPageType) => {
     services: searchParams?.services
       ? searchParams?.services.split(',')
       : undefined,
-    state: searchParams?.state ? searchParams?.state : undefined
+    state: searchParams?.state ? searchParams?.state : undefined,
+    breast: searchParams?.breast ? searchParams?.breast : undefined,
+    hair: searchParams?.hair ? searchParams?.hair : undefined,
+    search: searchParams?.search ? searchParams?.search : undefined,
   }
   const { data, loading } = useQuery(get_premium_ads, {
     variables: { page: 1, pageSize: 12, filter: filters }
-    // skip: !!!searchParams?.id
   })
+  const [limit, setLimit] = useState(false)
+  const [adsData, setAdsData] = useState([])
+  const { page, setPage } = usePagination()
+  const { ref, inView, } = useInView({
+    threshold: 0,
+  });
+  const { data: normal_ads } = useQuery(get_normal_ads, {
+    variables: { page: page, pageSize: 30, filter: filters }
+  })
+  useEffect(() => {
+    if (normal_ads) {
+      setLimit(normal_ads?.normalAds?.ads.length)
+      setAdsData((prevAds) => [...prevAds, ...normal_ads?.normalAds?.ads]);
+    }
+  }, [normal_ads])
+  useEffect(() => {
+    if (inView && limit) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  }, [inView])
+
   return (
     <Container className='my-10'>
       <div>
@@ -203,7 +225,7 @@ const PostPage = ({ searchParams }: PostPageType) => {
           </Swiper>
         </div>
       )}
-      {data?.premiumAds?.ads.length > 0 && (
+      {adsData.length > 0 && (
         <div className='flex justify-between items-center mt-2'>
           <h1 className='flex items-center gap-2 mt-4 text-2xl text-primary'>
             <ArrowLeft
@@ -214,10 +236,10 @@ const PostPage = ({ searchParams }: PostPageType) => {
           </h1>
         </div>
       )}
-      {data?.premiumAds?.ads.length > 0 && (
+      {adsData.length > 0 && (
         <div className='gap-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-6'>
-          {data &&
-            data?.premiumAds?.ads?.map(item => {
+          {adsData &&
+            adsData?.map(item => {
               return (
                 <div
                   key={item?.id}
@@ -235,7 +257,7 @@ const PostPage = ({ searchParams }: PostPageType) => {
                           spaceBetween: 20
                         },
                       }}
-              
+
                       className='mySwiper'
                     >
                       {JSON.parse(item?.profile).map(it => {
@@ -272,6 +294,26 @@ const PostPage = ({ searchParams }: PostPageType) => {
             })}
         </div>
       )}
+      {(adsData.length && limit) && <div ref={ref}>
+        <div className='gap-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-6'>
+          {[...Array(4)].map((_, index) => {
+            return (
+              <div className='flex flex-col space-y-3' key={index}>
+                <Skeleton className='rounded-xl h-[200px]' />
+                <div className='space-y-2'>
+                  <Skeleton className='w-[250px] h-4' />
+                  <Skeleton className='w-[250px] h-4' />
+                  <div className='flex gap-2'>
+                    <Skeleton className='w-[100px] h-4' />
+                    <Skeleton className='w-[80px] h-4' />
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+      </div>}
       {open && (
         <GlobalSearchModal
           open={open}

@@ -22,23 +22,14 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import {
-  Cloud,
-  CreditCard,
-  Github,
-  Keyboard,
-  LifeBuoy,
+
   LogOut,
-  Mail,
-  MessageSquare,
-  PlusCircle,
-  Settings,
-  UserPlus,
-  Users,
+
 } from "lucide-react"
 import Image from 'next/image'
 const NavBarComp = () => {
   const router = useRouter()
-  const { user } = userInfoStore()
+  const { user,addUserInfo } = userInfoStore()
   return (
     <header className='top-0 left-0 z-50 sticky py-4 w-full nav-bg'>
       <Container className=''>
@@ -78,7 +69,8 @@ const NavBarComp = () => {
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => {
                         localStorage.clear()
-                        window.location.reload()
+                        addUserInfo('')
+                        router.push('/')
                       }}>
                         <LogOut />
                         <span>Log out</span>
@@ -87,7 +79,7 @@ const NavBarComp = () => {
                     <DropdownMenuSeparator />
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <h1 className='text-md text-white'>Hi, {user?.firstName}</h1>
+                <h1 className='text-md text-white  hidden sm:block'>Hi, {user?.firstName}</h1>
               </div>
             )}
             <Button

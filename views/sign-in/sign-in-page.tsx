@@ -47,9 +47,7 @@ const SignInPage = () => {
                 }
             })
             addUserInfo(data?.loginCustomer)
-            localStorage.setItem('accessToken',data?.loginCustomer?.token)
-            console.log(data?.loginCustomer,"data");
-            
+            localStorage.setItem('accessToken',data?.loginCustomer?.token)            
             route.push('/')
         },
     })

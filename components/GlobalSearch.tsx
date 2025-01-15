@@ -233,7 +233,7 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
       city: city,
       city_id: city_id,
       ethnicity: ethnicity,
-      bodyType: bodyType.join(','),
+      bodyType: bodyType,
       services: services.join(','),
       placeOfService: placeOfService.join(','),
       attentionTo: attentionTo.join(','),
@@ -474,7 +474,7 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
               <div className='flex flex-col gap-2'>
                 <h2 className='text-primary' style={{ letterSpacing: '1px' }}>
                   Hair{' '}
-                  {state?.hair.length > 0
+                  {state?.hair?.length > 0
                     ? `(1)`
                     : null}
                 </h2>

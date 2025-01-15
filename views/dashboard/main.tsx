@@ -93,7 +93,7 @@ export const DashboardMain = () => {
                   <div>
                     <div className='py-4 p-2'>
                       <h1 className='text-white'>{selectedData?.title}</h1>
-                      <h1 className='mt-1 text-[12px] text-ellipsis text-white whitespace-nowrap overflow-hidden'>
+                      <h1 className='mt-1 text-[12px] text-white'>
                         {selectedData?.description}
                       </h1>
                       <h1 className=' mt-2 text-white'>

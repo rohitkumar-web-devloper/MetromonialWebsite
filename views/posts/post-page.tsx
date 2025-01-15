@@ -100,8 +100,8 @@ const PostPage = ({ searchParams }: PostPageType) => {
         />
       </div>
       {data?.premiumAds?.ads.length > 0 && (
-        <div className='flex justify-between items-center mt-2'>
-          <h1 className='flex items-center gap-2 mt-4 text-2xl text-primary'>
+        <div className='flex justify-between items-center mt-4'>
+          <h1 className='flex items-center gap-2 text-2xl text-primary'>
             <ArrowLeft
               className='cursor-pointer'
               onClick={() => router.back()}

@@ -27,6 +27,8 @@ import { toast } from 'sonner'
 import { ArrowLeft, Check } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import dayjs from 'dayjs'
+import { userInfoStore } from '@/stores'
+import ImageDisplay from '@/components/ImageDisplay'
 const reducer = (state, action) => {
   switch (action.type) {
     case 'category':
@@ -198,6 +200,7 @@ const reducer = (state, action) => {
 const PostAdsPage = () => {
   const router = useRouter()
   const [createAd, { loading }] = useMutation(ADD_POST)
+  const { user } = userInfoStore()
   const [state, dispatch] = useReducer(reducer, {
     category: '',
     categoryId: '',
@@ -226,6 +229,7 @@ const PostAdsPage = () => {
     city: '',
     email: ''
   })
+
   const { data: stateData } = useQuery(STATES_GET)
   const { data: plansData } = useQuery(getPlans)
   const { data: cityData } = useQuery(CITIES_GET, {
@@ -235,6 +239,12 @@ const PostAdsPage = () => {
   const handleChangeValue = (type: string, payload: string) => {
     dispatch({ type, payload })
   }
+  useEffect(() => {
+    if (user) {
+      handleChangeValue('email', user?.email)
+      handleChangeValue('mobileNumber', user?.mobile)
+    }
+  }, [user])
   const { data } = useQuery(homeCategory)
   const handleImageUpload = (
     event: EventListener,
@@ -442,6 +452,7 @@ const PostAdsPage = () => {
     })
     router.push('/')
   }
+
   return (
     <div>
       <Container className='lg:w-[80%]'>
@@ -1028,9 +1039,9 @@ const PostAdsPage = () => {
                             ? 'border-[1px] border-primary'
                             : null
                         )}
-                        onClick={() => setPlanSelect(item)}
+                        onClick={() => { setPlanSelect(item); setSelectSlot({}) }}
                       >
-                        <div
+                        {/* <div
                           style={{
                             width: '100%',
                             paddingBottom: 'auto',
@@ -1038,9 +1049,9 @@ const PostAdsPage = () => {
                             overflow: 'hidden',
                             height: '200px'
                           }}
-                          // className='sm:px-6'
-                        >
-                          <img
+                        // className='sm:px-6'
+                        > */}
+                        {/* <img
                             src={item?.image}
                             alt='Event'
                             style={{
@@ -1048,9 +1059,10 @@ const PostAdsPage = () => {
                               objectFit: 'cover',
                               position: 'static'
                             }}
-                          />
-                        </div>
-                        <div className='flex flex-col justify-center items-center gap-3 mt-6 p-3'>
+                          /> */}
+                        <ImageDisplay imageUrl={item?.image} sm="260px" xs="265px" />
+                        {/* </div> */}
+                        <div className='flex flex-col justify-center items-center gap-3 p-3'>
                           <h2 className='text-white'>{item?.name}</h2>
                           <h1 className='text-2xl text-primary'>
                             Rs.{item?.price}
@@ -1078,7 +1090,7 @@ const PostAdsPage = () => {
                 })}
             </div>
             {Object.values(planSelect).length &&
-            planSelect?.timeSlots?.length ? (
+              planSelect?.timeSlots?.length ? (
               <div className='mt-6'>
                 <p className='text-md text-red-500'>*Please select One slot.</p>
                 <div className='flex flex-wrap gap-2 mt-4'>
@@ -1122,8 +1134,12 @@ const PostAdsPage = () => {
           <Button
             className='mt-8 rounded-full w-full font-semibold text-lg'
             onClick={handleSubmit}
+            disabled={loading}
           >
-            Confirm
+            {
+              loading ? "...loading" : "Confirm"
+            }
+
           </Button>
         </div>
       </Container>

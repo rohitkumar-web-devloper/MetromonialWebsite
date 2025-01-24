@@ -60,7 +60,7 @@ const MainVideo = styled.video`
   border-radius: 8px; /* Remove quotes */
 `;
 
-const ImageDisplay = ({ imageUrl, videoUrl, xs, sm }) => {  
+const ImageDisplay = ({ imageUrl, xs, sm }) => {  
   const isMobile = useMediaQuery("(max-width:715px)");
   const appliedHeight = isMobile ? xs : sm;
   return (

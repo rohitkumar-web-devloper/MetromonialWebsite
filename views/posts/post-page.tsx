@@ -46,7 +46,7 @@ const PostPage = ({ searchParams }: PostPageType) => {
       : undefined,
     city: searchParams?.city || undefined,
     ethnicity: searchParams?.ethnicity
-      ? 
+      ?
       searchParams?.ethnicity
       : undefined,
     nationality: searchParams?.country || undefined,
@@ -137,7 +137,7 @@ const PostPage = ({ searchParams }: PostPageType) => {
           })}
         </div>
       )}
-      {!loading && data?.premiumAds?.ads.length == 0 && (
+      {!loading && (data?.premiumAds?.ads.length == 0 && adsData.length == 0) && (
         <div className='flex flex-col justify-center items-center mt-10'>
           <Image src={No_Data} alt='no data' width={400} height={400} />
           <h1 className='mt-4 text-2xl text-primary'>No data found...</h1>

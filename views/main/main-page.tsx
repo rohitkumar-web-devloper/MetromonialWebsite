@@ -8,6 +8,7 @@ import { useQuery } from '@apollo/client'
 import { homeCategory } from '@/GraphQl'
 import { useRouter } from 'next/navigation'
 import { GlobalSearchModal } from '@/components/GlobalSearch'
+import ImageDisplay from '@/components/ImageDisplay'
 const MainPage = () => {
   const router = useRouter()
   const { data } = useQuery(homeCategory)
@@ -105,7 +106,8 @@ const MainPage = () => {
                           height: '300px'
                         }}
                       >
-                        <img
+                        <ImageDisplay imageUrl={item?.image} sm="260px" xs="265px"/>
+                        {/* <img
                           src={item?.image}
                           alt='Event'
                           style={{
@@ -113,7 +115,7 @@ const MainPage = () => {
                             objectFit: 'cover',
                             position: 'static'
                           }}
-                        />
+                        /> */}
                         <div className='bottom-0 absolute flex justify-center bg-primary py-2 w-full'>
                           <h1
                             className='font-bold text-black text-center'

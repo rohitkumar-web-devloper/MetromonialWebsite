@@ -12,13 +12,10 @@ import {
   Blend,
   Phone,
   PhoneCall,
-  Search,
-  SlidersHorizontal,
   User
 } from 'lucide-react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
-// Import Swiper styles
 import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
@@ -63,12 +60,12 @@ const AdsDetailsModal = ({ open, close, selectedData }) => {
                     <SwiperSlide key={index} className=''>
                       <div className='relative'>
                         <ImageDisplay imageUrl={it} xs='200px' />
-                        <div className='top-2 left-0 absolute bg-primary px-2 py-1 rounded-r-full'>
+                        {selectedData?.planType == "premium" && <div className='top-2 left-0 absolute bg-primary px-2 py-1 rounded-r-full'>
                           <p className='flex items-center gap-1 text-[12px]'>
                             <BadgeCheck size={20} />
                             Premium
                           </p>
-                        </div>
+                        </div>}
                       </div>
                     </SwiperSlide>
                   )
@@ -193,8 +190,7 @@ const AdsDetailsModal = ({ open, close, selectedData }) => {
                         className='flex items-center gap-1 bg-[#d4d4d41a] p-2 rounded-xl text-white cursor-pointer'
                         onClick={() =>
                           window.open(
-                            `https://wa.me/${
-                              selectedData?.whatsAppNumber
+                            `https://wa.me/${selectedData?.whatsAppNumber
                             }?text=${encodeURIComponent('Hello')}`
                           )
                         }

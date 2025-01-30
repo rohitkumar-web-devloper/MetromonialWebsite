@@ -14,7 +14,7 @@ import { BadgeCheck, Blend, User } from 'lucide-react'
 import ImageDisplay from '@/components/ImageDisplay'
 export const DashboardMain = () => {
   const { user } = userInfoStore()
-  const { data } = useQuery(CUSTOMERS_DETAILS_GET, { variables: { createdById: 1 } })
+  const { data } = useQuery(CUSTOMERS_DETAILS_GET, { variables: { createdById: user?.id } })
   return (
     <div>
       <div className='h-52 w-full bg-primary/80 relative mb-[400px]'>
@@ -41,7 +41,7 @@ export const DashboardMain = () => {
                 <div className='py-6 px-4'>
                   <div className='flex justify-between items-center'>
                     <h6 className='text-white'>Total Ads</h6>
-                    <h6 className='text-white'>{data?.ads?.length}</h6>
+                    <h6 className='text-white'>{data?.ads?.length || 0}</h6>
                   </div>
                 </div>
               </div>

@@ -13,6 +13,7 @@ export const get_premium_ads = gql`
         breast
         category
         categoryId
+        planType
         city
         createdAt
         createdById
@@ -59,6 +60,7 @@ export const get_normal_ads = gql`
         attentionTo {
           name
         }
+        planType
         bodyType
         breast
         category

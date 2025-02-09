@@ -243,7 +243,7 @@ const GlobalSearchModal = ({ open, close, searchParams }: any) => {
 
 
     }
-    router.push(`/posts?data=${JSON.stringify(data)}`)
+    router.push(`/posts/?data=${JSON.stringify(data)}`)
     close()
   }
 

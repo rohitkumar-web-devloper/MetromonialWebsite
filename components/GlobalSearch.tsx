@@ -12,7 +12,7 @@ import {
 import { Search, SlidersHorizontal } from 'lucide-react'
 import { useQuery } from '@apollo/client'
 import { CITIES_GET, homeCategory, STATES_GET } from '@/GraphQl'
-const reducer = (state, action) => {
+const reducer = (state: any, action: any) => {
   switch (action.type) {
     case 'category':
       return {
@@ -160,7 +160,7 @@ import { Input } from './ui/input'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-const GlobalSearchModal = ({ open, close, searchParams }) => {
+const GlobalSearchModal = ({ open, close, searchParams }: any) => {
   const router = useRouter()
   const [state, dispatch] = useReducer(reducer, {
     category: '',
@@ -239,7 +239,7 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
       attentionTo: attentionTo.join(','),
       hair: hair,
       breast: breast,
-      search:search
+      search: search
 
 
     }
@@ -356,7 +356,7 @@ const GlobalSearchModal = ({ open, close, searchParams }) => {
                   onValueChange={(value: string) => {
                     const items = cities.find(
                       (it: { name: string; id: string }) => it?.id == value
-                    ) as unknown as { id: string }
+                    ) as unknown as { id: string, name: string; }
                     handleChangeValue('city', items?.name)
                     handleChangeValue('city_id', items?.id)
                   }}

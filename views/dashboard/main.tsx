@@ -73,7 +73,7 @@ export const DashboardMain = () => {
                       }}
                       className='mySwiper'
                     >
-                      {JSON.parse(selectedData?.profile).map((it, index) => {
+                      {JSON.parse(selectedData?.profile).map((it: any, index: number) => {
                         return (
                           <SwiperSlide key={index} className=''>
                             <div className='relative'>
@@ -123,7 +123,7 @@ export const DashboardMain = () => {
                       </div>
                       <h1 className='mt-2 text-primary'>Attention to</h1>
                       <div className='flex gap-2 mt-1 flex-wrap'>
-                        {selectedData?.attentionTo.map(item => {
+                        {selectedData?.attentionTo.map((item: any) => {
                           return (
                             <div
                               key={item?.name}
@@ -154,7 +154,7 @@ export const DashboardMain = () => {
                       </div>
                       <h1 className='mt-2 text-primary'>Place of Services</h1>
                       <div className='flex gap-2 mt-1 flex-wrap'>
-                        {selectedData?.placeOfServices.map(it => {
+                        {selectedData?.placeOfServices.map((it: any) => {
                           return (
                             <div
                               key={it?.name}
@@ -167,7 +167,7 @@ export const DashboardMain = () => {
                       </div>
                       <h1 className='mt-2 text-primary'>Services</h1>
                       <div className='flex flex-wrap gap-2 mt-1'>
-                        {selectedData?.services.map(it => {
+                        {selectedData?.services.map((it: any) => {
                           return (
                             <div
                               key={it?.name}
@@ -180,7 +180,7 @@ export const DashboardMain = () => {
                       </div>
                       <h1 className='mt-2 text-primary'>Payment Mode</h1>
                       <div className='flex gap-2 mt-1'>
-                        {JSON.parse(selectedData?.paymentMethod[0]).map(it => {
+                        {JSON.parse(selectedData?.paymentMethod[0]).map((it: any) => {
                           return (
                             <div
                               key={it}

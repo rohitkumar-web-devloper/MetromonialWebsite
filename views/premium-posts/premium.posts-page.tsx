@@ -1,14 +1,11 @@
 'use client'
-import { Input } from '@/components/ui/input'
 import { Container } from '@/layouts'
 import React, { useEffect, useRef, useState } from 'react'
 interface CatgoryType {
   id: number
   name: string
 }
-interface PostPageType {
-  catgory: CatgoryType
-}
+
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 // Import Swiper styles
@@ -22,12 +19,15 @@ import { get_premium_ads } from '@/GraphQl'
 import { ArrowLeft, BadgeCheck, Blend, User } from 'lucide-react'
 import ImageDisplay from '@/components/ImageDisplay'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { GlobalSearchModal } from '@/components/GlobalSearch'
 import { AdsDetailsModal } from '@/components/AdDetailsModal'
 import { useModalControl, usePagination } from '@/hooks'
 import { useInView } from "react-intersection-observer";
-const PremiumPostPage = ({ searchParams }: PostPageType) => {
+const PremiumPostPage = (mainData) => {
+  
+  const searchParamsData = useSearchParams()
+  const searchParams = JSON.parse(searchParamsData.get('data') || "{}")
   const [open, setOpen] = useState(false)
   const [selectedData, setSelectedData] = useState()
   const { page, setPage } = usePagination()

@@ -1,12 +1,7 @@
 import { PostPage } from '@/views'
-import React from 'react'
+import React, { Suspense } from 'react'
 
-export default async function page ({
-  searchParams
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
-  const { data } = await searchParams
+export default function page() {
 
-  return <PostPage searchParams={JSON.parse(data)} />
+  return <Suspense fallback="...loading"> <PostPage /></Suspense>
 }

@@ -1,6 +1,12 @@
 import { useMediaQuery } from "@/hooks";
 import styled from "styled-components";
-const Container = styled.div`
+type ContainerProps = {
+  height?: string;
+};
+type BlurProps = {
+  src?: string;
+};
+const Container = styled.div<ContainerProps>`
   width: 100%;
   height: ${({ height }) => height || "250px"};
   position: relative;
@@ -8,7 +14,7 @@ const Container = styled.div`
   border-radius: "8px";
 `;
 
-const BlurredBackground = styled.div`
+const BlurredBackground = styled.div<BlurProps>`
   position: absolute;
   width: 100%;
   height: 100%;
@@ -60,9 +66,9 @@ const MainVideo = styled.video`
   border-radius: 8px; /* Remove quotes */
 `;
 
-const ImageDisplay = ({ imageUrl, xs, sm }) => {  
+const ImageDisplay = ({ imageUrl, xs }: any) => {
   const isMobile = useMediaQuery("(max-width:715px)");
-  const appliedHeight = isMobile ? xs : sm;
+  const appliedHeight = isMobile ? xs : xs;
   return (
     <Container height={appliedHeight} className="rounded-[8px]">
       <BlurredBackground src={imageUrl} />

@@ -20,7 +20,8 @@ const MainComp = ({
             : route.test(pathname);
     });
     const uploadLink = createUploadLink({
-        uri: 'http://localhost:7575/graphql', // Update with your GraphQL endpoint
+        // uri: 'http://localhost:7575/graphql', // Update with your GraphQL endpoint
+        uri: process.env.BASE_URL, // Update with your GraphQL endpoint
 
     });
     const authLink = setContext((_, { headers }) => {
@@ -40,6 +41,8 @@ const MainComp = ({
             mutate: { errorPolicy: 'all' },
         },
     });
+    console.log(process.env.BASE_URL);
+    
 
     return (
         <>

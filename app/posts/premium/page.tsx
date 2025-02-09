@@ -1,11 +1,6 @@
 import { PremiumPostPage } from '@/views'
-import React from 'react'
+import React, { Suspense } from 'react'
 
-export default async function page ({
-  searchParams
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
-  const { data } = await searchParams
-  return <PremiumPostPage  searchParams={JSON.parse(data)}  />
+export default function page() {
+  return <Suspense fallback="...loading"><PremiumPostPage /></Suspense>
 }

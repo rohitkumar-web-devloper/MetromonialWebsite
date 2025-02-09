@@ -22,7 +22,7 @@ import { get_normal_ads, get_premium_ads } from '@/GraphQl'
 import { ArrowLeft, BadgeCheck, Blend, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import ImageDisplay from '@/components/ImageDisplay'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Skeleton } from '@/components/ui/skeleton'
 import Image from 'next/image'
 import No_Data from '../../assets/no_feedback-67e33c89.svg'
@@ -30,7 +30,10 @@ import { GlobalSearchModal } from '@/components/GlobalSearch'
 import { AdsDetailsModal } from '@/components/AdDetailsModal'
 import { useModalControl, usePagination } from '@/hooks'
 import { useInView } from 'react-intersection-observer'
-const PostPage = ({ searchParams }: PostPageType) => {
+const PostPage = () => {
+  const searchParams = useSearchParams()
+  const searchParamsData = JSON.parse(searchParams.get('data')|| "{}")
+
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [selectedData, setSelectedData] = useState()
@@ -40,26 +43,26 @@ const PostPage = ({ searchParams }: PostPageType) => {
     handleOpenModal
   } = useModalControl()
   const filters = {
-    categoryId: +searchParams?.id,
-    attentionTo: searchParams?.attentionTo
-      ? searchParams?.attentionTo?.split(',')
+    categoryId: +searchParamsData?.id,
+    attentionTo: searchParamsData?.attentionTo
+      ? searchParamsData?.attentionTo?.split(',')
       : undefined,
-    city: searchParams?.city || undefined,
-    ethnicity: searchParams?.ethnicity
+    city: searchParamsData?.city || undefined,
+    ethnicity: searchParamsData?.ethnicity
       ?
-      searchParams?.ethnicity
+      searchParamsData?.ethnicity
       : undefined,
-    nationality: searchParams?.country || undefined,
-    placeOfService: searchParams?.placeOfService
-      ? searchParams?.placeOfService?.split(',')
+    nationality: searchParamsData?.country || undefined,
+    placeOfService: searchParamsData?.placeOfService
+      ? searchParamsData?.placeOfService?.split(',')
       : undefined,
-    services: searchParams?.services
-      ? searchParams?.services.split(',')
+    services: searchParamsData?.services
+      ? searchParamsData?.services.split(',')
       : undefined,
-    state: searchParams?.state ? searchParams?.state : undefined,
-    breast: searchParams?.breast ? searchParams?.breast : undefined,
-    hair: searchParams?.hair ? searchParams?.hair : undefined,
-    search: searchParams?.search ? searchParams?.search : undefined,
+    state: searchParamsData?.state ? searchParamsData?.state : undefined,
+    breast: searchParamsData?.breast ? searchParamsData?.breast : undefined,
+    hair: searchParamsData?.hair ? searchParamsData?.hair : undefined,
+    search: searchParamsData?.search ? searchParamsData?.search : undefined,
   }
   const { data, loading } = useQuery(get_premium_ads, {
     variables: { page: 1, pageSize: 12, filter: filters }
@@ -106,12 +109,12 @@ const PostPage = ({ searchParams }: PostPageType) => {
               className='cursor-pointer'
               onClick={() => router.back()}
             />
-            Toppremium {searchParams?.name}
+            Toppremium {searchParamsData?.name}
           </h1>
           <Button
             variant='link'
             onClick={() =>
-              router.push(`/posts/premium?data=${JSON.stringify(searchParams)}`)
+              router.push(`/posts/premium?data=${JSON.stringify(searchParamsData)}`)
             }
           >
             View all
@@ -232,7 +235,7 @@ const PostPage = ({ searchParams }: PostPageType) => {
               className='cursor-pointer'
               onClick={() => router.back()}
             />
-            {searchParams?.name} Users
+            {searchParamsData?.name} Users
           </h1>
         </div>
       )}
@@ -318,7 +321,7 @@ const PostPage = ({ searchParams }: PostPageType) => {
         <GlobalSearchModal
           open={open}
           close={() => setOpen(false)}
-          searchParams={searchParams}
+          searchParams={searchParamsData}
         />
       )}
       {isAddOpen && (

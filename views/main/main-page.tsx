@@ -9,9 +9,10 @@ import { homeCategory } from '@/GraphQl'
 import { useRouter } from 'next/navigation'
 import { GlobalSearchModal } from '@/components/GlobalSearch'
 import ImageDisplay from '@/components/ImageDisplay'
+import { Skeleton } from '@/components/ui/skeleton'
 const MainPage = () => {
   const router = useRouter()
-  const { data } = useQuery(homeCategory)
+  const { data, loading } = useQuery(homeCategory)
   const [open, setOpen] = useState(false)
   return (
     <div>
@@ -74,6 +75,24 @@ const MainPage = () => {
             classified ads for FREE if you don’t find a perfect profile.
           </p>
         </div>
+        {loading &&
+          <div className='gap-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-6'>
+            {[...Array(4)].map((_, index) => {
+              return (
+                <div className='flex flex-col space-y-3' key={index}>
+                  <Skeleton className='rounded-xl h-[200px]' />
+                  <div className='space-y-2'>
+                    <Skeleton className='w-[250px] h-4' />
+                    <Skeleton className='w-[250px] h-4' />
+                    <div className='flex gap-2'>
+                      <Skeleton className='w-[100px] h-4' />
+                      <Skeleton className='w-[80px] h-4' />
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>}
         <div className='gap-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 my-10'>
           {data &&
             data?.homeCategory?.map(
@@ -133,9 +152,9 @@ const MainPage = () => {
               }
             )}
         </div>
-      </Container>
+      </Container >
       {open && <GlobalSearchModal open={open} close={() => setOpen(false)} />}
-    </div>
+    </div >
   )
 }
 

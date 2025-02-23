@@ -24,8 +24,8 @@ import { GlobalSearchModal } from '@/components/GlobalSearch'
 import { AdsDetailsModal } from '@/components/AdDetailsModal'
 import { useModalControl, usePagination } from '@/hooks'
 import { useInView } from "react-intersection-observer";
-const PremiumPostPage = (mainData) => {
-  
+const PremiumPostPage = ({ category, location }: any) => {
+
   const searchParamsData = useSearchParams()
   const searchParams = JSON.parse(searchParamsData.get('data') || "{}")
   const [open, setOpen] = useState(false)
@@ -35,26 +35,49 @@ const PremiumPostPage = (mainData) => {
   const { ref, inView, entry } = useInView({
     threshold: 0,
   });
+  // const filters = {
+  //   category_handler: category,
+  //   city_handler: location,
+  //   categoryId: +searchParams?.id,
+  //   attentionTo: searchParams?.attentionTo
+  //     ? searchParams?.attentionTo?.split(',')
+  //     : undefined,
+  //   city: searchParams?.city || undefined,
+  //   ethnicity: searchParams?.ethnicity
+  //     ?
+  //     searchParams?.ethnicity
+  //     : undefined,
+  //   nationality: searchParams?.country || undefined,
+  //   placeOfService: searchParams?.placeOfService
+  //     ? searchParams?.placeOfService?.split(',')
+  //     : undefined,
+  //   services: searchParams?.services
+  //     ? searchParams?.services.split(',')
+  //     : undefined,
+  //   state: searchParams?.state ? searchParams?.state : undefined,
+  //   breast: searchParams?.breast ? searchParams?.breast : undefined,
+  //   hair: searchParams?.hair ? searchParams?.hair : undefined,
+  //   search: searchParams?.search ? searchParams?.search : undefined,
+  // }
   const filters = {
-    categoryId: +searchParams?.id,
-    attentionTo: searchParams?.attentionTo
-      ? searchParams?.attentionTo?.split(',')
-      : undefined,
-    city: searchParams?.city || undefined,
-    ethnicity: searchParams?.ethnicity
-      ?
-      searchParams?.ethnicity
-      : undefined,
-    nationality: searchParams?.country || undefined,
+    category_handler: category,
+    city_handler: location || undefined,
+    breast: searchParams?.breast ? searchParams?.breast : undefined,
+    hair: searchParams?.hair ? searchParams?.hair : undefined,
+    nationality: searchParams?.nationality || undefined,
     placeOfService: searchParams?.placeOfService
       ? searchParams?.placeOfService?.split(',')
       : undefined,
     services: searchParams?.services
       ? searchParams?.services.split(',')
       : undefined,
-    state: searchParams?.state ? searchParams?.state : undefined,
-    breast: searchParams?.breast ? searchParams?.breast : undefined,
-    hair: searchParams?.hair ? searchParams?.hair : undefined,
+    attentionTo: searchParams?.attentionTo
+      ? searchParams?.attentionTo?.split(',')
+      : undefined,
+    ethnicity: searchParams?.ethnicity
+      ?
+      searchParams?.ethnicity
+      : undefined,
     search: searchParams?.search ? searchParams?.search : undefined,
   }
   const [limit, setLimit] = useState(false)

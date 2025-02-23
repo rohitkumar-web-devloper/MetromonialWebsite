@@ -15,6 +15,7 @@ export const CITIES_GET = gql`
       id
       name
       stateId
+      handler
       updatedAt
       createdAt
     }

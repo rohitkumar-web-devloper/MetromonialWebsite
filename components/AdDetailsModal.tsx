@@ -89,10 +89,10 @@ const AdsDetailsModal = ({ open, close, selectedData }: any) => {
                 </div>
                 <h1 className='mt-2 text-primary'>Attention to</h1>
                 <div className='flex gap-2 mt-1 flex-wrap'>
-                  {selectedData?.attentionTo.map((item: any) => {
+                  {selectedData?.attentionTo.map((item: any,index:number) => {
                     return (
                       <div
-                        key={item?.name}
+                        key={index}
                         className='flex items-center gap-2 bg-[#d4d4d41a] mt-2 px-2 py-1 rounded-xl text-[12px] text-white'
                       >
                         <Blend size={15} /> {item?.name}
@@ -120,10 +120,10 @@ const AdsDetailsModal = ({ open, close, selectedData }: any) => {
                 </div>
                 <h1 className='mt-2 text-primary'>Place of Services</h1>
                 <div className='flex gap-2 mt-1 flex-wrap'>
-                  {selectedData?.placeOfServices.map((it:any) => {
+                  {selectedData?.placeOfServices.map((it:any,index:number) => {
                     return (
                       <div
-                        key={it?.name}
+                        key={index}
                         className='flex items-center gap-2 bg-[#d4d4d41a] mt-2 px-2 py-1 rounded-xl text-[12px] text-white'
                       >
                         <Blend size={15} /> {it?.name}
@@ -133,10 +133,10 @@ const AdsDetailsModal = ({ open, close, selectedData }: any) => {
                 </div>
                 <h1 className='mt-2 text-primary'>Services</h1>
                 <div className='flex flex-wrap gap-2 mt-1'>
-                  {selectedData?.services.map((it:any) => {
+                  {selectedData?.services.map((it:any,index:number) => {
                     return (
                       <div
-                        key={it?.name}
+                        key={index}
                         className='flex items-center gap-2 bg-[#d4d4d41a] mt-2 px-2 py-1 rounded-xl text-[12px] text-white'
                       >
                         <Blend size={15} /> {it?.name}

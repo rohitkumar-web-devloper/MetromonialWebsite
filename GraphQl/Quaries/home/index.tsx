@@ -7,6 +7,7 @@ export const homeCategory = gql`
         city
         city_count
       }
+      handler
       description
       id
       image

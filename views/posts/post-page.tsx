@@ -16,7 +16,7 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 // import required modules
-import { Pagination, Autoplay, Navigation } from 'swiper/modules'
+import { Autoplay, Navigation } from 'swiper/modules'
 import { useQuery } from '@apollo/client'
 import { get_normal_ads, get_premium_ads } from '@/GraphQl'
 import { ArrowLeft, BadgeCheck, Blend, User } from 'lucide-react'
@@ -30,9 +30,9 @@ import { GlobalSearchModal } from '@/components/GlobalSearch'
 import { AdsDetailsModal } from '@/components/AdDetailsModal'
 import { useModalControl, usePagination } from '@/hooks'
 import { useInView } from 'react-intersection-observer'
-const PostPage = () => {
+const PostPage = ({ category, location }: any) => {
   const searchParams = useSearchParams()
-  const searchParamsData = JSON.parse(searchParams.get('data')|| "{}")
+  const searchParamsData = JSON.parse(searchParams.get('data') || "{}")
 
   const router = useRouter()
   const [open, setOpen] = useState(false)
@@ -43,27 +43,27 @@ const PostPage = () => {
     handleOpenModal
   } = useModalControl()
   const filters = {
-    categoryId: +searchParamsData?.id,
-    attentionTo: searchParamsData?.attentionTo
-      ? searchParamsData?.attentionTo?.split(',')
-      : undefined,
-    city: searchParamsData?.city || undefined,
-    ethnicity: searchParamsData?.ethnicity
-      ?
-      searchParamsData?.ethnicity
-      : undefined,
-    nationality: searchParamsData?.country || undefined,
+    category_handler: category,
+    city_handler: location || undefined,
+    breast: searchParamsData?.breast ? searchParamsData?.breast : undefined,
+    hair: searchParamsData?.hair ? searchParamsData?.hair : undefined,
+    nationality: searchParamsData?.nationality || undefined,
     placeOfService: searchParamsData?.placeOfService
       ? searchParamsData?.placeOfService?.split(',')
       : undefined,
     services: searchParamsData?.services
       ? searchParamsData?.services.split(',')
       : undefined,
-    state: searchParamsData?.state ? searchParamsData?.state : undefined,
-    breast: searchParamsData?.breast ? searchParamsData?.breast : undefined,
-    hair: searchParamsData?.hair ? searchParamsData?.hair : undefined,
+    attentionTo: searchParamsData?.attentionTo
+      ? searchParamsData?.attentionTo?.split(',')
+      : undefined,
+    ethnicity: searchParamsData?.ethnicity
+      ?
+      searchParamsData?.ethnicity
+      : undefined,
     search: searchParamsData?.search ? searchParamsData?.search : undefined,
   }
+  
   const { data, loading } = useQuery(get_premium_ads, {
     variables: { page: 1, pageSize: 12, filter: filters }
   })
@@ -87,7 +87,12 @@ const PostPage = () => {
       setPage((prevPage) => prevPage + 1);
     }
   }, [inView])
-
+  const formatText = (text) => {
+    return text
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
   return (
     <Container className='my-10'>
       <div>
@@ -109,12 +114,31 @@ const PostPage = () => {
               className='cursor-pointer'
               onClick={() => router.back()}
             />
-            Toppremium {searchParamsData?.name}
+            Toppremium {formatText(category)}
           </h1>
           <Button
             variant='link'
-            onClick={() =>
-              router.push(`/posts/premium?data=${JSON.stringify(searchParamsData)}`)
+            onClick={() => {
+
+
+              const filteredData = Object.fromEntries(
+                Object.entries(filters).filter(([_, v]) => v !== null && v !== '' && v != undefined)
+              );
+              delete filteredData.category_handler
+              delete filteredData.city_handler
+              let url = `/explore/${category}`;
+              if (location) {
+                url += `/${location}/premium`;
+              }else{
+                
+                url += `/premium`;
+              }
+          
+              if (Object.keys(filteredData).length) {
+                url += `?data=${encodeURIComponent(JSON.stringify(filteredData))}`;
+              }
+              router.push(url);
+            }
             }
           >
             View all
@@ -321,6 +345,8 @@ const PostPage = () => {
         <GlobalSearchModal
           open={open}
           close={() => setOpen(false)}
+          location={location}
+          category={category}
           searchParams={searchParamsData}
         />
       )}

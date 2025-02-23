@@ -78,7 +78,7 @@ const MainPage = () => {
           {data &&
             data?.homeCategory?.map(
               (
-                item: { image: string; name: string; description: string },
+                item: { image: string; name: string; description: string, handler: string },
                 index: number
               ) => {
                 return (
@@ -87,12 +87,7 @@ const MainPage = () => {
                     key={index}
                     onClick={() =>
                       router.push(
-                        `/posts?data=${
-                          JSON.stringify({
-                            id: item?.id,
-                            name: item?.name
-                          })
-                        }`
+                        `/explore/${item?.handler}`
                       )
                     }
                   >
@@ -106,7 +101,7 @@ const MainPage = () => {
                           height: '300px'
                         }}
                       >
-                        <ImageDisplay imageUrl={item?.image} sm="260px" xs="265px"/>
+                        <ImageDisplay imageUrl={item?.image} sm="260px" xs="265px" />
                         {/* <img
                           src={item?.image}
                           alt='Event'

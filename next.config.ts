@@ -3,9 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: false,
-  output:"export",
-  trailingSlash: false,
-  images: { unoptimized: true } ,
+  // output:"export",
+  // trailingSlash: false,
+  // images: { unoptimized: true } ,
   typescript: {
     ignoreBuildErrors: true,
   },

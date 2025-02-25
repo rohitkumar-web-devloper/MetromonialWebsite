@@ -48,7 +48,7 @@ const MainPage = () => {
               className='bg-white rounded-full w-full lg:h-[3rem] text-black text-center text-lg'
             />
             <h1 className='mt-2 mb-4 text-3xl text-start text-white'>
-              Find Your Love
+              Find Your Love  qwertyuiopwertyuiop
             </h1>
           </div>
         </div>
